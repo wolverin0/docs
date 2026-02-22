@@ -1,0 +1,167 @@
+---
+title: Administracion
+description: Configuracion del sistema, usuarios, reportes y actividad
+---
+
+# Administracion
+
+La seccion de Administracion del sidebar agrupa las funcionalidades de configuracion y gestion del sistema. Todas las pantallas de esta seccion requieren rol **Admin**.
+
+## Configuracion
+
+La pantalla de configuracion se organiza en multiples secciones:
+
+<Tabs>
+  <Tab title="General">
+    Datos de la empresa que se usan en facturas, presupuestos y documentos PDF:
+
+    | Campo | Descripcion |
+    |-------|-------------|
+    | **Nombre de empresa** | Nombre comercial |
+    | **Razon social** | Razon social legal |
+    | **CUIT** | Numero de identificacion fiscal |
+    | **Direccion** | Direccion fiscal |
+    | **Telefono** | Telefono de contacto |
+    | **Email** | Email de la empresa |
+    | **Logo** | URL del logotipo (se muestra en PDFs) |
+    | **Sitio web** | URL del sitio web |
+    | **Condicion fiscal** | Tipo de contribuyente |
+    | **Inicio de actividades** | Fecha de inicio de actividades ante AFIP |
+    | **Punto de venta** | Numero de punto de venta para facturacion |
+  </Tab>
+
+  <Tab title="Categorias">
+    Gestion de categorias personalizables del sistema:
+
+    **Categorias de costos de evento**: Las categorias que aparecen al agregar costos a un evento (Locacion, Gastronomia, Tecnica, etc.). Se pueden agregar, editar, reordenar y eliminar.
+
+    **Categorias de proveedores**: Las categorias para clasificar proveedores (Tecnica, Ambientacion, Livings, etc.). Configurables de forma independiente.
+
+    <Tip>
+      Las categorias se usan como filtros en listados y como agrupadores en los acordeones de costos. Agregar categorias relevantes mejora la organizacion del equipo.
+    </Tip>
+  </Tab>
+
+  <Tab title="Pagos">
+    Configuracion del modulo de pagos:
+
+    | Campo | Descripcion |
+    |-------|-------------|
+    | **Umbral de aprobacion** | Monto a partir del cual los pagos requieren aprobacion (en ARS). Si es `null`, no se requiere aprobacion. |
+    | **Formas de pago** | Lista editable de metodos de pago disponibles (transferencia, cheque, efectivo, etc.) |
+  </Tab>
+
+  <Tab title="WhatsApp">
+    Configuracion de notificaciones por WhatsApp:
+
+    | Campo | Descripcion |
+    |-------|-------------|
+    | **Notificaciones habilitadas** | Toggle global para activar/desactivar notificaciones WhatsApp |
+    | **Dias de gracia** | Cantidad de dias despues del vencimiento para enviar notificacion |
+    | **Estado del bot** | Indicador de conexion del bot de WhatsApp (conectado/desconectado) |
+
+    <Warning>
+      El bot de WhatsApp debe estar conectado y autenticado para que las notificaciones funcionen. El estado se muestra en esta seccion.
+    </Warning>
+  </Tab>
+
+  <Tab title="AFIP">
+    Configuracion para facturacion electronica:
+
+    - Punto de venta configurado
+    - Entorno: Homologacion (testing) o Produccion
+    - Credenciales AFIP (gestionadas via Edge Function)
+    - Condicion fiscal del emisor
+  </Tab>
+</Tabs>
+
+## Usuarios
+
+Gestion de usuarios del sistema con asignacion de roles:
+
+### Roles disponibles
+
+| Rol | Permisos |
+|-----|----------|
+| **Admin** | Acceso completo a todos los modulos, configuracion y administracion |
+| **Produccion** | Acceso a eventos, tareas, proveedores, clientes, presupuestos y pagos. Sin acceso a facturacion, configuracion ni administracion |
+| **Finanzas** | Acceso a eventos, pagos, facturas, recibos, notas, aprobaciones, reportes, proveedores, clientes y presupuestos. Sin acceso a administracion |
+
+### Acciones de usuario
+
+- **Invitar usuario**: Envia un email con link para establecer contrasena (via Edge Function `invite-user`)
+- **Crear usuario**: Crea directamente un usuario con contrasena (via Edge Function `create-user`)
+- **Editar rol**: Cambiar el rol asignado
+- **Gestionar**: Activar/desactivar cuentas (via Edge Function `manage-user`)
+
+<Info>
+  Los roles se almacenan en la tabla `user_roles` y se inyectan en el JWT como claim `user_role` a traves del Custom Access Token Hook de Supabase.
+</Info>
+
+## Reportes
+
+Pantalla de reportes financieros para cumplimiento fiscal:
+
+### Retenciones
+
+Reporte de todas las retenciones aplicadas en pagos:
+
+| Columna | Descripcion |
+|---------|-------------|
+| **Proveedor** | Nombre del proveedor |
+| **CUIT** | CUIT del proveedor |
+| **Periodo** | Mes/ano del pago |
+| **IIBB** | Retencion de Ingresos Brutos |
+| **Ganancias** | Retencion de Ganancias |
+| **IVA** | Retencion de IVA |
+| **Total** | Suma de retenciones |
+
+Filtrable por periodo y exportable a Excel.
+
+### SIRE
+
+Reporte en formato SIRE (Sistema Integrado de Retenciones Electronicas) para presentacion ante AFIP:
+
+- Formato compatible con la aplicacion SIRE de AFIP
+- Exportable a archivo de texto con formato regulado
+- Incluye datos de retenciones agrupados por proveedor y periodo
+
+## Aprobaciones
+
+Cola de pagos pendientes de aprobacion:
+
+- Lista de pagos que superan el umbral configurado
+- Detalle del pago con proveedor, evento, monto y solicitante
+- Botones de **Aprobar** y **Rechazar** (con campo para motivo)
+- Historial de aprobaciones/rechazos anteriores
+
+## Actividad
+
+Log cronologico de toda la actividad del sistema:
+
+| Columna | Descripcion |
+|---------|-------------|
+| **Fecha** | Timestamp de la accion |
+| **Usuario** | Quien realizo la accion |
+| **Accion** | Tipo de accion (crear, editar, eliminar, cambio de estado) |
+| **Entidad** | Tipo de entidad afectada (evento, pago, tarea, etc.) |
+| **Detalle** | Descripcion del cambio realizado |
+
+Filtrable por usuario, tipo de accion y rango de fechas.
+
+## Exportaciones
+
+Todas las pantallas de listado incluyen boton **Exportar** con soporte para:
+
+### Excel (XLSX)
+
+- Generado en el navegador usando ExcelJS
+- Columnas formateadas segun el tipo de dato
+- Filtros aplicados se reflejan en la exportacion
+- Disponible en: Eventos, Pagos, Proveedores, Clientes, Facturas, Recibos, Notas, Presupuestos
+
+### PDF
+
+- Generado en el navegador usando jsPDF + autoTable
+- Disponible en: Presupuestos (documento completo), Facturas (comprobante), Recibos (comprobante), Notas de credito/debito (comprobante)
+- Incluye datos de la empresa, cliente y tabla de items

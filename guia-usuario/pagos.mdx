@@ -1,0 +1,115 @@
+---
+title: Pagos
+description: Gestion de pagos a proveedores con flujo de aprobacion
+---
+
+# Pagos
+
+El modulo de Pagos gestiona todos los pagos a proveedores, con soporte para retenciones impositivas, diferentes tipos de factura y un flujo de aprobacion configurable.
+
+## Listado de pagos
+
+Tabla principal con todos los pagos del sistema:
+
+| Columna | Descripcion |
+|---------|-------------|
+| **#** | Numero correlativo automatico |
+| **Proveedor** | Nombre del proveedor (con categoria) |
+| **Evento** | Evento asociado (opcional) |
+| **N Factura** | Numero de factura del proveedor |
+| **Tipo** | Tipo de factura (A o C) |
+| **Importe** | Monto bruto |
+| **Neto** | Monto neto (calculado por la base de datos) |
+| **Fecha Pago** | Fecha de pago programada |
+| **Estado** | Pendiente o Pagado |
+| **Aprobacion** | Estado del flujo de aprobacion |
+
+### Filtros disponibles
+
+- **Estado**: Pendiente / Pagado
+- **Proveedor**: Selector con busqueda
+- **Evento**: Selector con busqueda
+- **Tipo de factura**: A / C
+- **Rango de fechas**: Desde / Hasta
+- **Aprobacion**: No requerida / Pendiente / Aprobado / Rechazado
+
+### Acciones
+
+- **Nuevo Pago**: Abre el formulario de creacion
+- **Exportar**: Descarga a Excel con todos los filtros aplicados
+
+## Crear pago
+
+<Steps>
+  <Step title="Seleccionar proveedor">
+    Dropdown con busqueda. Al seleccionar un proveedor, se auto-completan los datos bancarios si estan cargados.
+  </Step>
+  <Step title="Datos de factura">
+    - **N de factura**: Numero de comprobante del proveedor
+    - **Fecha de factura**: Fecha de emision
+    - **Tipo de factura**: A (Responsable Inscripto) o C (Monotributo/CF)
+  </Step>
+  <Step title="Montos">
+    - **Importe**: Monto bruto de la factura
+    - **IVA**: Calculado automaticamente segun tipo de factura (21% para tipo A)
+    - **Retenciones**: IIBB, Ganancias, IVA (opcionales, configurables por proveedor)
+    - **Neto**: Calculado automaticamente por la base de datos (Importe - IVA - Retenciones)
+  </Step>
+  <Step title="Pago">
+    - **Fecha de pago**: Fecha programada o efectiva de pago
+    - **Tipo de pago**: Adelanto, Saldo, o Total
+    - **Estado**: Pendiente o Pagado
+    - **Forma de pago**: Texto libre (transferencia, cheque, efectivo, etc.)
+    - **Quien pide**: Persona que solicito el pago
+  </Step>
+  <Step title="Vinculacion">
+    - **Evento**: Asociar el pago a un evento (opcional)
+    - **Cliente**: Asociar a un cliente (opcional)
+    - **Notas**: Observaciones internas
+  </Step>
+  <Step title="Guardar">
+    Al guardar, el pago se crea y si supera el umbral configurado en Configuracion, se inicia el flujo de aprobacion.
+  </Step>
+</Steps>
+
+## Flujo de aprobacion
+
+El sistema de aprobaciones se activa cuando un pago supera el **umbral de aprobacion** configurado en los ajustes de la empresa.
+
+<Steps>
+  <Step title="Creacion del pago">
+    Si el importe supera el umbral, el estado de aprobacion se establece en `pending_approval`.
+  </Step>
+  <Step title="Notificacion">
+    Los usuarios con rol `admin` o `finanzas` reciben notificacion del pago pendiente de aprobacion.
+  </Step>
+  <Step title="Revision">
+    Desde la pantalla de **Aprobaciones** o desde el detalle del pago, el aprobador puede:
+    - **Aprobar**: El pago queda habilitado para ser procesado
+    - **Rechazar**: Se registra el motivo del rechazo
+  </Step>
+  <Step title="Registro">
+    Se guarda quien aprobo/rechazo, la fecha y el motivo (en caso de rechazo).
+  </Step>
+</Steps>
+
+### Estados de aprobacion
+
+| Estado | Descripcion |
+|--------|-------------|
+| **No requerida** | El importe no supera el umbral |
+| **Pendiente** | Esperando aprobacion |
+| **Aprobado** | Pago aprobado por un administrador |
+| **Rechazado** | Pago rechazado (con motivo) |
+
+## Notificaciones WhatsApp
+
+<Info>
+  Esta funcionalidad requiere que el bot de WhatsApp este conectado y habilitado en Configuracion.
+</Info>
+
+Cuando un pago cambia de estado o vence, el sistema puede enviar notificaciones automaticas por WhatsApp:
+
+- **Pago vencido**: Notificacion al proveedor con el detalle del pago pendiente
+- **Dias de gracia**: Configurable en los ajustes (`whatsapp_overdue_days`)
+- **Toggle global**: Se habilita/deshabilita desde Configuracion > WhatsApp

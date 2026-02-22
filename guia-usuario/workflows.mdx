@@ -1,0 +1,119 @@
+---
+title: Workflows
+description: Automatizaciones visuales con editor de nodos drag-and-drop
+---
+
+# Workflows
+
+El modulo de Workflows permite crear automatizaciones visuales que se ejecutan cuando ocurren determinados eventos en el sistema. Se accede desde el sidebar en la seccion **Administracion** (solo rol Admin).
+
+## Listado de workflows
+
+Tabla con todos los workflows configurados:
+
+| Columna | Descripcion |
+|---------|-------------|
+| **Nombre** | Nombre descriptivo del workflow |
+| **Descripcion** | Explicacion breve del proposito |
+| **Trigger** | Evento que dispara la ejecucion |
+| **Activo** | Toggle de activacion |
+| **Ultima ejecucion** | Fecha y resultado de la ultima ejecucion |
+
+**Acciones**: Crear nuevo, editar, duplicar, activar/desactivar, eliminar.
+
+## Editor visual
+
+El editor de workflows utiliza un canvas de nodos interactivos (basado en React Flow / XY Flow) donde se conectan bloques visualmente:
+
+### Tipos de trigger (disparador)
+
+El trigger define cuando se ejecuta el workflow:
+
+| Trigger | Descripcion |
+|---------|-------------|
+| **status_changed** | Cuando cambia el estado de una entidad (evento, pago, etc.) |
+| **event_completed** | Cuando un evento pasa a estado "Completado" |
+| **payment_overdue** | Cuando un pago supera su fecha de vencimiento |
+| **task_assigned** | Cuando se asigna una tarea a un usuario |
+| **entity_created** | Cuando se crea una nueva entidad en el sistema |
+| **entity_updated** | Cuando se modifica una entidad existente |
+
+Cada trigger tiene una **configuracion adicional** (trigger_config) que permite especificar condiciones como el tipo de entidad, el estado anterior/nuevo, etc.
+
+### Tipos de accion
+
+Los nodos de accion realizan operaciones cuando se ejecuta el workflow:
+
+| Accion | Descripcion |
+|--------|-------------|
+| **send_email** | Envia un email usando una plantilla configurada |
+| **change_status** | Cambia el estado de una entidad automaticamente |
+| **create_task** | Crea una nueva tarea en un evento |
+| **send_whatsapp** | Envia un mensaje de WhatsApp al numero configurado |
+| **wait** | Pausa la ejecucion por un tiempo determinado |
+
+### Nodos de condicion
+
+Los nodos de condicion permiten crear bifurcaciones en el flujo:
+
+| Campo | Descripcion |
+|-------|-------------|
+| **Field** | Campo de la entidad a evaluar |
+| **Operator** | Operador de comparacion |
+| **Value** | Valor contra el que se compara |
+
+**Operadores disponibles**:
+
+| Operador | Descripcion |
+|----------|-------------|
+| `equals` | Igual a |
+| `not_equals` | Diferente de |
+| `contains` | Contiene el texto |
+| `greater_than` | Mayor que |
+| `less_than` | Menor que |
+
+Cada nodo de condicion tiene dos salidas:
+- **Verdadero** (`true_step_id`): Se sigue este camino si la condicion se cumple
+- **Falso** (`false_step_id`): Se sigue este camino si no se cumple
+
+### Conexiones entre nodos
+
+Los nodos se conectan mediante lineas arrastrables:
+- **Nodo de accion**: Tiene una unica salida (`next_step_id`)
+- **Nodo de condicion**: Tiene dos salidas (verdadero y falso)
+- Cada nodo tiene una posicion en el canvas (`{x, y}`) que se persiste
+
+<Tip>
+  Arrastra nodos por el canvas para organizar visualmente tu workflow. Las posiciones se guardan automaticamente.
+</Tip>
+
+## Registro de ejecucion
+
+Cada vez que un workflow se ejecuta, se genera un registro detallado:
+
+### Datos de la ejecucion
+
+| Campo | Descripcion |
+|-------|-------------|
+| **Workflow** | Nombre del workflow ejecutado |
+| **Entidad trigger** | Tipo y ID de la entidad que disparo la ejecucion |
+| **Estado** | Running, Completed, Failed, Cancelled |
+| **Paso actual** | ID del paso en ejecucion (si esta running) |
+| **Inicio** | Timestamp de inicio |
+| **Fin** | Timestamp de finalizacion |
+
+### Log detallado
+
+Cada paso de la ejecucion se registra con:
+
+| Campo | Descripcion |
+|-------|-------------|
+| **Step ID** | Identificador del nodo ejecutado |
+| **Accion** | Tipo de accion realizada |
+| **Estado** | Success, Error, Skipped |
+| **Mensaje** | Descripcion del resultado |
+| **Timestamp** | Momento de ejecucion |
+
+<Warning>
+  Los workflows se ejecutan a traves de una Edge Function de Supabase (`workflow-execute`). Asegurate de que la funcion este desplegada y activa.
+</Warning>

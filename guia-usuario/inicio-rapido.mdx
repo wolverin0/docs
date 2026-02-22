@@ -1,0 +1,87 @@
+---
+title: Inicio Rapido
+description: Acceso al sistema, navegacion y atajos de teclado
+---
+
+# Inicio Rapido
+
+## Acceso al sistema
+
+<Steps>
+  <Step title="Abrir la aplicacion">
+    Navega a [https://impulsa-flax.vercel.app](https://impulsa-flax.vercel.app) desde cualquier navegador moderno (Chrome, Firefox, Edge, Safari).
+  </Step>
+  <Step title="Iniciar sesion">
+    Ingresa tu email y contrasena en la pantalla de login. Si es tu primer acceso, usa el enlace de establecer contrasena que recibiste por email.
+  </Step>
+  <Step title="Acceder al Dashboard">
+    Una vez autenticado, seras redirigido automaticamente al **Dashboard** con el resumen ejecutivo de tu organizacion.
+  </Step>
+</Steps>
+
+<Tip>
+  Si olvidaste tu contrasena, contacta al administrador del sistema para que te envie un nuevo enlace de configuracion.
+</Tip>
+
+## Navegacion
+
+El sidebar izquierdo organiza todos los modulos del sistema en dos grupos:
+
+### Principal
+
+| Modulo | Descripcion | Roles con acceso |
+|--------|-------------|------------------|
+| **Dashboard** | Resumen ejecutivo con KPIs y proyecciones | Admin, Produccion, Finanzas |
+| **Eventos** | Gestion completa de eventos (15 pestanas) | Admin, Produccion, Finanzas |
+| **Tareas** | Tablero kanban global de tareas | Admin, Produccion, Finanzas |
+| **Pagos** | Pagos a proveedores con aprobaciones | Admin, Produccion, Finanzas |
+| **Proveedores** | Directorio de proveedores | Admin, Produccion, Finanzas |
+| **Clientes** | Cartera de clientes | Admin, Produccion, Finanzas |
+| **Presupuestos** | Cotizaciones V1 y V2 | Admin, Produccion, Finanzas |
+| **Facturas** | Facturacion electronica (AFIP) | Admin, Finanzas |
+| **Recibos** | Comprobantes de cobro | Admin, Finanzas |
+| **Notas** | Notas de credito y debito | Admin, Finanzas |
+| **Aprobaciones** | Cola de aprobaciones pendientes | Admin, Finanzas |
+| **Reportes** | Reportes de retenciones y SIRE | Admin, Finanzas |
+
+### Administracion
+
+| Modulo | Descripcion | Roles con acceso |
+|--------|-------------|------------------|
+| **Usuarios** | Gestion de usuarios y roles | Solo Admin |
+| **Actividad** | Log de actividad del sistema | Solo Admin |
+| **Workflows** | Automatizaciones visuales | Solo Admin |
+| **Configuracion** | Parametros generales del sistema | Solo Admin |
+
+## Comando rapido (Ctrl+K)
+
+Presiona `Ctrl+K` (o `Cmd+K` en Mac) en cualquier momento para abrir el **Command Palette**. Desde ahi puedes:
+
+- Buscar y navegar a cualquier modulo rapidamente
+- Acceder a acciones frecuentes
+- Filtrar por nombre de evento, proveedor o cliente
+
+<Info>
+  El Command Palette funciona en todas las pantallas y es la forma mas rapida de navegar entre modulos.
+</Info>
+
+## Atajos de teclado
+
+| Atajo | Accion |
+|-------|--------|
+| `Ctrl+K` / `Cmd+K` | Abrir Command Palette |
+| `Escape` | Cerrar dialogo o panel activo |
+
+## Uso en mobile
+
+Impulsa CRM es completamente responsive y funciona en dispositivos moviles:
+
+- **Sidebar**: Se oculta automaticamente y se abre con el icono de menu hamburguesa
+- **Tablas**: En pantallas pequenas, las filas se convierten en tarjetas (cards) para mejor legibilidad
+- **Kanban**: Las columnas del tablero se muestran en scroll horizontal, con flechas `<` `>` para mover tareas entre estados
+- **Formularios**: Se adaptan a una columna en mobile
+- **Botones de accion**: Los textos largos se abrevian en pantallas pequenas (ej. "Generar presupuesto" se convierte en "PDF")
+
+<Warning>
+  Ancho minimo recomendado: **375px** (iPhone SE). Pantallas mas pequenas pueden tener problemas de layout.
+</Warning>

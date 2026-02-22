@@ -1,0 +1,172 @@
+---
+title: Facturacion
+description: Facturas, recibos y notas de credito/debito con generacion de PDF
+---
+
+# Facturacion
+
+El sistema de facturacion de Impulsa CRM cubre tres tipos de comprobantes: **Facturas**, **Recibos** y **Notas de Credito/Debito**. Todos soportan generacion de PDF y se gestionan desde modulos independientes en el sidebar.
+
+---
+
+## Facturas
+
+### Listado de facturas
+
+| Columna | Descripcion |
+|---------|-------------|
+| **#** | Numero de factura (punto de venta + numero) |
+| **Tipo** | A, B o C |
+| **Cliente** | Cliente al que se emite |
+| **Evento** | Evento asociado (opcional) |
+| **Fecha** | Fecha de emision |
+| **Vencimiento** | Fecha de vencimiento del pago |
+| **Total** | Monto total de la factura |
+| **Estado** | Badge de estado |
+
+**Acciones**: Nuevo, Exportar, Filtros por tipo/estado/cliente/rango de fechas.
+
+### Estados de factura
+
+| Estado | Descripcion |
+|--------|-------------|
+| **Borrador** | En confeccion, no emitida |
+| **Emitida** | Factura emitida al cliente |
+| **Pagada** | Factura cobrada |
+| **Anulada** | Factura anulada |
+
+### Crear factura
+
+<Steps>
+  <Step title="Tipo de factura">
+    Seleccionar tipo A (Responsable Inscripto), B (Consumidor Final) o C (Monotributo).
+  </Step>
+  <Step title="Cliente y evento">
+    Vincular a un cliente (requerido) y opcionalmente a un evento y/o presupuesto.
+  </Step>
+  <Step title="Fechas">
+    Fecha de emision y fecha de vencimiento.
+  </Step>
+  <Step title="Items">
+    Agregar renglones con:
+    - Descripcion
+    - Cantidad
+    - Precio unitario
+    - Tasa de IVA (21%, 10.5% o 0%)
+    - Subtotal e IVA (calculados automaticamente)
+  </Step>
+  <Step title="Totales">
+    Se calculan automaticamente:
+    - **Subtotal gravado**: Suma de items con IVA
+    - **IVA 21%**: Total de IVA al 21%
+    - **IVA 10.5%**: Total de IVA al 10.5%
+    - **Subtotal no gravado**: Items exentos de IVA
+    - **Total**: Suma de todos los conceptos
+  </Step>
+  <Step title="Guardar">
+    La factura se guarda con el punto de venta configurado en los ajustes de la empresa.
+  </Step>
+</Steps>
+
+### Generacion de PDF
+
+El PDF de factura incluye:
+
+- Datos del emisor (empresa): razon social, CUIT, condicion fiscal, direccion
+- Datos del receptor (cliente): razon social, CUIT, condicion fiscal
+- Tipo y numero de comprobante
+- Tabla de items con cantidades, precios e IVA
+- Totales discriminados
+- CAE y vencimiento de CAE (si fue emitida via AFIP)
+- Codigo QR de verificacion AFIP (si aplica)
+
+### Integracion AFIP
+
+<Info>
+  La emision electronica via AFIP se realiza a traves de una Edge Function de Supabase (`afip-emit`). Soporta entorno de homologacion (testing) y produccion.
+</Info>
+
+Al emitir una factura via AFIP:
+
+1. Se envian los datos al servicio de AFIP
+2. Se recibe el **CAE** (Codigo de Autorizacion Electronica) y su **fecha de vencimiento**
+3. Se almacena el entorno utilizado (`homo` o `prod`)
+4. Si hay error, se guarda el mensaje de error de AFIP para diagnostico
+
+---
+
+## Recibos
+
+Los recibos son comprobantes de cobro que se emiten cuando un cliente realiza un pago.
+
+### Listado de recibos
+
+| Columna | Descripcion |
+|---------|-------------|
+| **#** | Numero de recibo |
+| **Cliente** | Cliente que paga |
+| **Factura** | Factura asociada (opcional) |
+| **Fecha** | Fecha del recibo |
+| **Monto** | Importe recibido |
+| **Forma de pago** | Transferencia, cheque, efectivo, etc. |
+
+### Crear recibo
+
+| Campo | Tipo | Requerido |
+|-------|------|-----------|
+| **Cliente** | Selector | No |
+| **Factura** | Selector (filtrado por cliente) | No |
+| **Fecha** | Date picker | Si |
+| **Monto** | Numerico | Si |
+| **Forma de pago** | Texto | No |
+| **Concepto** | Texto | No |
+| **Notas** | Textarea | No |
+
+### PDF de recibo
+
+Comprobante con datos del emisor, receptor, monto recibido, forma de pago y concepto.
+
+---
+
+## Notas de Credito / Debito
+
+Las notas de credito y debito ajustan montos de facturas emitidas.
+
+### Listado
+
+| Columna | Descripcion |
+|---------|-------------|
+| **#** | Numero de nota |
+| **Tipo** | Credito o Debito |
+| **Cliente** | Cliente asociado |
+| **Factura** | Factura que ajusta |
+| **Fecha** | Fecha de emision |
+| **Importe** | Monto base |
+| **IVA** | Monto de IVA |
+| **Total** | Importe + IVA |
+| **Estado** | Borrador, Emitida, Anulada |
+
+### Crear nota
+
+<Steps>
+  <Step title="Tipo">
+    Seleccionar **Credito** (devolucion/bonificacion) o **Debito** (cargo adicional).
+  </Step>
+  <Step title="Vinculacion">
+    Asociar a una factura existente (opcional) y a un cliente.
+  </Step>
+  <Step title="Montos">
+    - **Concepto**: Descripcion del ajuste
+    - **Importe**: Monto base del ajuste
+    - **IVA %**: Porcentaje de IVA aplicado
+    - **IVA**: Calculado automaticamente
+    - **Total**: Importe + IVA
+  </Step>
+  <Step title="Guardar">
+    La nota se crea en estado Borrador. Cambiar a Emitida cuando sea definitiva.
+  </Step>
+</Steps>
+
+### PDF de nota
+
+Comprobante con identificacion del tipo (Credito/Debito), datos del emisor y receptor, factura de referencia, concepto, montos e IVA.

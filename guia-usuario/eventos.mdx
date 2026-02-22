@@ -1,0 +1,276 @@
+---
+title: Eventos
+description: Gestion completa de eventos con 15 pestanas de funcionalidad
+---
+
+# Eventos
+
+El modulo de Eventos es el nucleo de Impulsa CRM. Cada evento representa un proyecto de planificacion con 15 pestanas que cubren todos los aspectos de la produccion, finanzas y logistica.
+
+## Listado de eventos
+
+La pantalla principal muestra una tabla con todos los eventos, incluyendo:
+
+| Columna | Descripcion |
+|---------|-------------|
+| **Nombre** | Nombre del evento (clickeable, lleva al detalle) |
+| **Cliente** | Cliente asociado al evento |
+| **Fecha** | Fecha de realizacion del evento |
+| **Estado** | Badge de estado con color |
+| **Costo total** | Suma de todos los costos del evento |
+| **Venta total** | Suma de los precios de venta (costo + markup) |
+| **Margen** | Porcentaje de rentabilidad |
+
+### Estados de evento
+
+| Estado | Color | Descripcion |
+|--------|-------|-------------|
+| **Borrador** | Gris | Evento en planificacion inicial |
+| **En Curso** | Azul | Evento en produccion activa |
+| **Completado** | Verde | Evento finalizado |
+| **Cancelado** | Rojo | Evento cancelado |
+
+### Acciones del listado
+
+- **Boton "Nuevo Evento"**: Abre el formulario de creacion
+- **Boton "Exportar"**: Descarga la lista en formato Excel
+- **Filtros**: Por estado, cliente y rango de fechas
+- **Busqueda**: Por nombre del evento
+
+## Crear evento
+
+<Steps>
+  <Step title="Completar formulario">
+    Campos requeridos:
+    - **Nombre** del evento
+    - **Estado** (Borrador por defecto)
+
+    Campos opcionales:
+    - **Cliente** (selector con busqueda)
+    - **Fecha del evento** y **Fecha de fin**
+    - **Lugar**
+    - **Precio del cliente** (monto que cobra la agencia)
+    - **Notas** internas
+  </Step>
+  <Step title="Guardar">
+    Al guardar, se crea el evento y se redirige automaticamente a la pagina de detalle.
+  </Step>
+</Steps>
+
+## Detalle del evento
+
+La pagina de detalle muestra el nombre del evento, su estado (badge), el cliente asociado y una barra de progreso de tareas (readiness). En el header hay acciones rapidas:
+
+- **Exportar iCal**: Descarga archivo `.ics` para agregar al calendario
+- **Generar presupuesto**: Genera un PDF de presupuesto con los costos del evento
+- **Presupuesto desde costos**: Crea un presupuesto V2 pre-cargado con los costos del evento
+
+### Las 15 pestanas
+
+<AccordionGroup>
+  <Accordion title="1. General">
+    Informacion principal del evento en formato de ficha:
+
+    - **Datos basicos**: Nombre, cliente, fecha inicio/fin, lugar, estado
+    - **Financieros**: Precio del cliente, costo total, venta total, margen (% y monto)
+    - **Modo del evento**: Solo invitados, Entradas publicas, o Hibrido
+    - **Slug**: URL amigable para la pagina publica (`/e/{slug}`)
+    - **Notas**: Texto libre para notas internas
+    - **Edicion inline**: Todos los campos son editables directamente desde esta vista
+  </Accordion>
+
+  <Accordion title="2. Costos">
+    Gestion de costos agrupados por categoria en acordeones colapsables.
+
+    **Categorias disponibles**: Locacion, Gastronomia, Tecnica, Ambientacion Generica, Ambientacion Lola, Mobiliario, Activacion Terciarizada, Activacion Propia, Show, Speakers, Audiovisual, Grafica, Equipo RH, Fee + Impuestos, Varios, Ticketing, Traslados, Kits/Regalos, Produccion, Teambuilding, Catering, Seguridad, Limpieza, Otros.
+
+    Cada item de costo tiene:
+    | Campo | Descripcion |
+    |-------|-------------|
+    | **Categoria** | Seleccion de la lista de categorias |
+    | **Costo unitario** | Precio por unidad |
+    | **Cantidad** | Numero de unidades |
+    | **Costo total** | Calculado automaticamente (unitario x cantidad) |
+    | **Markup %** | Porcentaje de margen aplicado |
+    | **Venta total** | Calculado automaticamente (costo + markup) |
+    | **Notas** | Descripcion o detalle del costo |
+
+    Al pie se muestra el **total de costos** y el **total de venta** del evento.
+  </Accordion>
+
+  <Accordion title="3. Proveedores">
+    Proveedores asignados al evento con su rol y monto acordado.
+
+    - **Agregar proveedor**: Selector con busqueda del directorio de proveedores
+    - **Campos por proveedor**: Rol en el evento, monto acordado, notas
+    - **Link al proveedor**: Click en el nombre navega al detalle del proveedor
+    - **Eliminar**: Quitar proveedor del evento
+  </Accordion>
+
+  <Accordion title="4. Rentabilidad">
+    Panel de analisis financiero del evento:
+
+    - **Precio del cliente**: Lo que cobra la agencia
+    - **Costo total**: Suma de todos los costos
+    - **Venta total**: Suma de costos con markup
+    - **Margen bruto**: Diferencia entre venta y costo
+    - **Margen %**: Porcentaje de rentabilidad
+    - **Grafico**: Visualizacion de la distribucion de costos por categoria
+  </Accordion>
+
+  <Accordion title="5. Pagos">
+    Lista de pagos vinculados al evento con tabla detallada:
+
+    | Columna | Descripcion |
+    |---------|-------------|
+    | **#** | Numero de pago |
+    | **Proveedor** | Nombre del proveedor |
+    | **Fecha** | Fecha de pago |
+    | **Importe** | Monto bruto |
+    | **Neto** | Monto neto (despues de retenciones) |
+    | **Estado** | Pendiente o Pagado |
+
+    - **Boton "Nuevo pago"**: Crea un pago pre-vinculado al evento
+    - **Click en fila**: Navega al detalle del pago
+  </Accordion>
+
+  <Accordion title="6. Tareas">
+    Tablero kanban de tareas especificas del evento:
+
+    - Misma funcionalidad que el tablero global, pero filtrado a este evento
+    - Columnas: Pendiente, En Progreso, Revision, Completado
+    - Drag-and-drop para cambiar estado
+    - **Barra de readiness**: Porcentaje de tareas completadas visible en el header del evento
+    - Crear tareas directamente desde esta pestana
+    - Vincular tareas a secciones del presupuesto V2
+
+    Ver [Tareas](/guia-usuario/tareas) para mas detalles sobre checklists, comentarios, adjuntos y links.
+  </Accordion>
+
+  <Accordion title="7. Asistentes">
+    Gestion completa de la lista de asistentes al evento:
+
+    - **Tabla de asistentes** con nombre, email, telefono, estado y fecha de check-in
+    - **Agregar asistente**: Formulario con campos personalizados segun configuracion del evento
+    - **Importar**: Carga masiva desde Excel/CSV
+    - **Exportar**: Descarga de la lista a Excel
+
+    **Estados de asistente**: Registrado, Invitado, Confirmado, Declinado, Cancelado, Lista de espera
+
+    **Campos de cada asistente**:
+    - Nombre y apellido
+    - Email y telefono
+    - Estado
+    - ID publico y token QR (generados automaticamente)
+    - Estado RSVP (Pendiente, Aceptado, Declinado, Quizas)
+    - Respuestas a preguntas personalizadas
+    - Fecha y metodo de check-in
+  </Accordion>
+
+  <Accordion title="8. Entradas (Tickets)">
+    Configuracion de tipos de entrada para venta publica:
+
+    Cada tipo de entrada tiene:
+    | Campo | Descripcion |
+    |-------|-------------|
+    | **Nombre** | Nombre del tipo de entrada (ej. "General", "VIP") |
+    | **Descripcion** | Detalle de lo que incluye |
+    | **Precio** | Precio en ARS |
+    | **Cantidad disponible** | Stock (null = ilimitado) |
+    | **Cantidad vendida** | Contador automatico |
+    | **Venta desde/hasta** | Periodo de venta |
+    | **Min/Max por orden** | Limites por compra |
+    | **Activa** | Toggle de disponibilidad |
+
+    Tambien se pueden configurar **codigos promocionales**:
+    - Tipo: Porcentaje o monto fijo
+    - Valor del descuento
+    - Usos maximos y contador de usos
+    - Periodo de validez
+    - Toggle activo/inactivo
+  </Accordion>
+
+  <Accordion title="9. Ordenes">
+    Lista de ordenes de compra de entradas:
+
+    | Columna | Descripcion |
+    |---------|-------------|
+    | **ID** | Identificador de la orden |
+    | **Email** | Email del comprador |
+    | **Nombre** | Nombre del comprador |
+    | **Estado** | Pendiente, Pagado, Fallido, Reembolsado, Cancelado |
+    | **Total** | Monto total de la orden |
+    | **Descuento** | Monto de descuento aplicado (codigo promo) |
+    | **Metodo de pago** | Metodo utilizado |
+    | **Fecha** | Fecha de la orden |
+
+    Cada orden contiene items con la entrada comprada, cantidad y subtotal.
+  </Accordion>
+
+  <Accordion title="10. Encuestas">
+    Creacion y gestion de encuestas post-evento:
+
+    - **Crear encuesta**: Nombre, mensaje de bienvenida, mensaje de agradecimiento
+    - **Tipos de pregunta**: Texto, Area de texto, Opcion unica, Opcion multiple, Rating, NPS, Si/No
+    - **Estado**: Borrador, Activa, Cerrada
+    - **Envio automatico**: Configurar dias despues del evento para envio automatico
+    - **Resultados**: Vista de respuestas con puntaje NPS agregado
+
+    Las encuestas generan links unicos por asistente que se comparten via la pagina publica `/survey/{token}`.
+  </Accordion>
+
+  <Accordion title="11. Check-in">
+    Dashboard de check-in en tiempo real:
+
+    - **Estadisticas**: Total de asistentes, checked-in, porcentaje
+    - **Modos de check-in**:
+      - `planner_scans`: Solo el organizador escanea QR
+      - `self_checkin`: Los asistentes se auto-registran
+      - `both`: Ambos modos habilitados
+    - **Log de check-in**: Historial con asistente, metodo, hora y quien lo registro
+    - **QR Poster**: Genera un poster imprimible con el QR de self-check-in del evento
+    - **Escaner QR**: Integrado en la pagina publica `/e/{slug}/scan`
+  </Accordion>
+
+  <Accordion title="12. Invitaciones">
+    Sistema de envio masivo de invitaciones:
+
+    - **Guest List Manager**: Gestion de la lista de invitados
+    - **RSVP Dashboard**: Resumen de confirmaciones (Total, Aceptados, Declinados, Quizas, Pendientes, Sin respuesta)
+    - **Envio por lotes**: Seleccion de asistentes, asunto y cuerpo HTML
+    - **Links RSVP**: Cada invitado recibe un link unico para confirmar asistencia en `/rsvp/{token}`
+    - **Tracking**: Fecha de envio, apertura y confirmacion por invitado
+  </Accordion>
+
+  <Accordion title="13. Plantillas">
+    Plantillas de email especificas del evento:
+
+    - Vinculadas al sistema global de plantillas de email
+    - Pre-filtradas para el evento actual
+    - **Composer de envio masivo**: Seleccion de destinatarios y envio desde la pestana
+    - Ver [Plantillas de Email](/guia-usuario/plantillas-email) para mas detalles
+  </Accordion>
+
+  <Accordion title="14. Actividad">
+    Feed de actividad cronologico del evento:
+
+    - Registro automatico de todas las acciones realizadas en el evento
+    - Usuario que realizo la accion
+    - Tipo de accion (creacion, edicion, eliminacion, cambio de estado)
+    - Timestamp
+    - Detalles del cambio realizado
+  </Accordion>
+
+  <Accordion title="15. Configuracion">
+    Panel de configuracion especifica del evento:
+
+    - **Modo del evento**: Solo invitados / Entradas publicas / Hibrido
+    - **Slug**: URL amigable para paginas publicas
+    - **Pagina publica**: Toggle para habilitar/deshabilitar
+    - **Modo de check-in**: Seleccion del metodo de check-in
+    - **Detalles del venue**: Informacion del lugar (JSON)
+    - **SEO**: Titulo y descripcion para la pagina publica
+    - **Homepage Settings**: Configuracion visual de la pagina publica del evento
+    - **Preguntas personalizadas**: Campos adicionales para el formulario de registro
+  </Accordion>
+</AccordionGroup>

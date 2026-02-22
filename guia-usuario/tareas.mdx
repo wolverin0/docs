@@ -1,0 +1,116 @@
+---
+title: Tareas
+description: Tablero kanban global con multiples vistas y funcionalidades
+---
+
+# Tareas
+
+El modulo de Tareas ofrece un tablero kanban global que agrupa todas las tareas de todos los eventos del sistema. Permite gestionar el trabajo del equipo con multiples vistas y funcionalidades avanzadas.
+
+## Tablero global
+
+El tablero muestra todas las tareas organizadas en columnas por estado:
+
+| Estado | Color | Descripcion |
+|--------|-------|-------------|
+| **Pendiente** | Gris | Tarea creada, sin iniciar |
+| **En Progreso** | Azul | Tarea en ejecucion |
+| **Revision** | Amarillo | Tarea completada, pendiente de revision |
+| **Completado** | Verde | Tarea finalizada |
+
+<Tip>
+  Podes arrastrar tarjetas entre columnas (drag and drop) para cambiar el estado rapidamente. En mobile, usa las flechas `<` `>` en cada tarjeta.
+</Tip>
+
+## Filtros
+
+El tablero incluye filtros combinables para encontrar tareas rapidamente:
+
+| Filtro | Opciones |
+|--------|----------|
+| **Evento** | Dropdown con todos los eventos activos |
+| **Asignado a** | Dropdown con usuarios del sistema |
+| **Prioridad** | Urgente, Alta, Media, Baja |
+| **Etiquetas** | Etiquetas personalizadas creadas por el equipo |
+| **Busqueda** | Busqueda por texto en titulo y descripcion |
+
+## Vistas
+
+<Tabs>
+  <Tab title="Kanban">
+    Vista predeterminada con columnas por estado. Soporta drag-and-drop para mover tareas entre estados. Cada tarjeta muestra:
+    - Titulo de la tarea
+    - Nombre del evento asociado
+    - Prioridad (badge de color)
+    - Usuario asignado (avatar)
+    - Fecha de vencimiento
+    - Progreso del checklist (si tiene)
+    - Contadores de comentarios y adjuntos
+  </Tab>
+  <Tab title="Tabla">
+    Vista de tabla con columnas ordenables y filtrables:
+    - Titulo, Evento, Asignado, Prioridad, Estado, Fecha vencimiento
+    - Acciones inline para cambiar estado y prioridad
+    - Exportable a Excel
+  </Tab>
+  <Tab title="Calendario">
+    Vista de calendario (FullCalendar) que muestra las tareas en su fecha de vencimiento:
+    - Vista mensual, semanal y lista
+    - Colores por prioridad
+    - Click en una tarea abre el panel de detalle
+  </Tab>
+</Tabs>
+
+## Panel de detalle de tarea
+
+Al hacer click en una tarea, se abre un panel lateral con toda la informacion:
+
+### Informacion principal
+
+- **Titulo** y **descripcion** (con soporte Markdown)
+- **Estado**, **prioridad**, **fecha de vencimiento**
+- **Asignado a**: Selector de usuarios
+- **Evento**: Evento asociado
+- **Seccion de presupuesto**: Seccion del presupuesto V2 vinculada (si aplica)
+- **Horas estimadas**: Para seguimiento de esfuerzo
+
+### Checklists
+
+- Multiples checklists por tarea
+- Items con checkbox individual
+- Barra de progreso que muestra items completados vs totales
+- Reordenamiento drag-and-drop de items
+- Agregar/eliminar items inline
+
+### Comentarios
+
+- Hilo de comentarios con soporte Markdown
+- Nombre del usuario y timestamp en cada comentario
+- Edicion y eliminacion de comentarios propios
+
+### Adjuntos
+
+- Subida de archivos a Supabase Storage
+- Vista previa de imagenes
+- Descarga directa
+- Nombre del archivo, tamano y usuario que lo subio
+
+### Links
+
+Cada tarea puede tener links externos categorizados:
+
+| Tipo | Icono | Uso tipico |
+|------|-------|------------|
+| Google Drive | Drive | Documentos compartidos |
+| Meet | Video | Links de videollamada |
+| Zoom | Video | Reuniones Zoom |
+| Transcripcion | Texto | Transcripciones de reuniones |
+| WhatsApp | Chat | Grupos o conversaciones |
+| Otro | Link | Cualquier otro URL |
+
+### Etiquetas
+
+- Etiquetas personalizadas con nombre y color
+- Creacion y gestion desde Configuracion
+- Multiples etiquetas por tarea
+- Filtro global por etiquetas en el tablero

@@ -1,0 +1,282 @@
+---
+title: Arquitectura
+description: Patrones de codigo, estructura de proyecto y convenciones
+---
+
+# Arquitectura
+
+## Estructura del proyecto
+
+```
+impulsa/
+├── public/                    # Assets estaticos
+├── src/
+│   ├── components/
+│   │   ├── layout/            # AppSidebar, Header, Layout
+│   │   ├── shared/            # ActivityFeed, DataTable, ExportButton...
+│   │   └── ui/                # shadcn/ui components (Button, Card, Dialog...)
+│   ├── features/
+│   │   ├── attendees/         # Asistentes
+│   │   ├── audit/             # Auditoria
+│   │   ├── auth/              # Autenticacion
+│   │   ├── checkin/           # Check-in
+│   │   ├── clients/           # Clientes
+│   │   ├── dashboard/         # Dashboard
+│   │   ├── email-templates/   # Plantillas de email
+│   │   ├── events/            # Eventos (modulo principal)
+│   │   ├── facturas/          # Facturas
+│   │   ├── invitations/       # Invitaciones
+│   │   ├── notas/             # Notas de credito/debito
+│   │   ├── notifications/     # Notificaciones
+│   │   ├── payments/          # Pagos
+│   │   ├── presupuestos/      # Presupuestos
+│   │   ├── providers/         # Proveedores
+│   │   ├── recibos/           # Recibos
+│   │   ├── reportes/          # Reportes
+│   │   ├── settings/          # Configuracion
+│   │   ├── surveys/           # Encuestas
+│   │   ├── tareas/            # Tareas
+│   │   ├── tickets/           # Entradas y ordenes
+│   │   └── workflows/         # Workflows
+│   ├── lib/                   # Utilidades globales
+│   │   ├── constants.ts       # NAV_ITEMS, categorias, labels
+│   │   ├── format.ts          # formatCurrency, formatDate
+│   │   ├── export-excel.ts    # Utilidad de exportacion Excel
+│   │   ├── calendar-urls.ts   # Generacion de URLs iCal
+│   │   ├── supabase.ts        # Cliente de Supabase
+│   │   └── utils.ts           # cn() y helpers
+│   ├── routes/                # TanStack Router (file-based)
+│   │   ├── _authenticated/    # Rutas autenticadas
+│   │   │   ├── _admin/        # Rutas solo para admin
+│   │   │   ├── dashboard.tsx
+│   │   │   ├── eventos.tsx    # Layout (Outlet)
+│   │   │   ├── eventos.index.tsx
+│   │   │   ├── eventos.$eventId.tsx
+│   │   │   ├── eventos.nuevo.tsx
+│   │   │   └── ...
+│   │   ├── e/                 # Rutas publicas de evento
+│   │   ├── login.tsx
+│   │   └── __root.tsx
+│   └── routeTree.gen.ts       # Generado automaticamente
+├── supabase/
+│   ├── migrations/            # 30 migraciones SQL
+│   └── functions/             # 8 Edge Functions
+├── tests/
+│   └── e2e-full.spec.ts       # 26 tests E2E
+└── playwright.config.ts
+```
+
+## Convencion Feature-Folder
+
+Cada dominio de negocio sigue esta estructura interna:
+
+```
+src/features/{domain}/
+├── components/     # Componentes React del dominio
+│   ├── {entity}-list.tsx
+│   ├── {entity}-form.tsx
+│   └── {entity}-detail.tsx
+├── hooks/          # Hooks de TanStack Query
+│   └── use-{entity}.ts
+├── lib/            # Schemas, constantes, columnas, utilidades
+│   ├── {entity}-schema.ts
+│   ├── {entity}-constants.ts
+│   └── {entity}-columns.tsx
+└── types.ts        # Tipos TypeScript del dominio
+```
+
+### Dominios activos
+
+| Dominio | Archivos tipicos | Descripcion |
+|---------|-----------------|-------------|
+| `auth` | auth-provider, login-form | Autenticacion JWT |
+| `events` | event-list, event-detail, event-form, event-cost-form | Nucleo del sistema |
+| `payments` | payment-list, payment-form | Pagos a proveedores |
+| `providers` | provider-list, provider-form | Directorio de proveedores |
+| `clients` | client-list, client-detail | Cartera de clientes |
+| `presupuestos` | presupuesto-form, presupuesto-detail | Cotizaciones V1/V2 |
+| `dashboard` | dashboard | Resumen ejecutivo |
+| `tareas` | task-board, task-detail, my-tasks-widget | Sistema de tareas |
+| `facturas` | factura-form, factura-detail | Facturacion |
+| `recibos` | recibo-form, recibo-list | Recibos de cobro |
+| `notas` | nota-form, nota-list | Notas de credito/debito |
+| `attendees` | attendee-list | Asistentes |
+| `checkin` | checkin-dashboard, event-qr-poster | Check-in |
+| `tickets` | ticket-builder, order-list | Entradas y ordenes |
+| `invitations` | guest-list-manager, rsvp-dashboard | Invitaciones |
+| `surveys` | survey-list, survey-builder | Encuestas |
+| `email-templates` | email-template-list, bulk-message-composer | Plantillas |
+| `workflows` | workflow-editor, workflow-runs | Automatizaciones |
+| `settings` | company-settings-form, categories-manager | Configuracion |
+| `reportes` | retenciones-report | Reportes fiscales |
+
+## Patron de rutas (TanStack Router)
+
+<Warning>
+  TanStack Router usa **layout + index** para rutas anidadas. **Nunca renderices un componente directamente en el archivo layout.** Siempre usa `Outlet` + archivo index separado.
+</Warning>
+
+```
+_authenticated/
+  eventos.tsx         # Layout: renderiza <Outlet />
+  eventos.index.tsx   # Index: renderiza EventList
+  eventos.nuevo.tsx   # Child: renderiza formulario de creacion
+  eventos.$eventId.tsx # Child: renderiza detalle del evento
+```
+
+El archivo layout (`eventos.tsx`) solo contiene:
+
+```tsx
+import { Outlet, createFileRoute } from '@tanstack/react-router'
+
+export const Route = createFileRoute('/_authenticated/eventos')({
+  component: () => <Outlet />,
+})
+```
+
+El archivo index (`eventos.index.tsx`) renderiza el componente principal:
+
+```tsx
+import { createFileRoute } from '@tanstack/react-router'
+import { EventList } from '@/features/events/components/event-list'
+
+export const Route = createFileRoute('/_authenticated/eventos/')({
+  component: EventList,
+})
+```
+
+## Patron de hooks (TanStack Query)
+
+Todos los hooks de datos siguen este patron estandar:
+
+```typescript
+// use-{entity}.ts
+
+// Query: lectura de datos
+export function useEntities(filters?) {
+  return useQuery({
+    queryKey: ['entities', filters],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('entities')
+        .select('*, related_table(id, name)')
+        .order('created_at', { ascending: false })
+
+      if (error) throw error
+      return data
+    },
+    staleTime: 10 * 60 * 1000, // 10 minutos
+  })
+}
+
+// Mutation: creacion
+export function useCreateEntity() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (data: EntityInsert) => {
+      const { error } = await supabase
+        .from('entities')
+        .insert(data as any) // cast as any hasta generar tipos
+
+      if (error) throw error
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['entities'] })
+      toast.success('Entidad creada exitosamente')
+    },
+    onError: (error) => {
+      toast.error(`Error al crear: ${error.message}`)
+    },
+  })
+}
+```
+
+<Info>
+  El `staleTime` de 10 minutos evita refetches innecesarios. Los datos se invalidan explicitamente al crear/editar/eliminar.
+</Info>
+
+## Patron de formularios
+
+Los formularios usan `react-hook-form` + `zod` + shadcn/ui:
+
+```typescript
+// {entity}-schema.ts
+import { z } from 'zod'
+
+export const entitySchema = z.object({
+  name: z.string().min(1, 'El nombre es requerido'),
+  email: z.string().email('Email invalido').optional(),
+  amount: z.number().min(0, 'El monto debe ser positivo'),
+})
+
+export type EntityFormValues = z.infer<typeof entitySchema>
+```
+
+```tsx
+// {entity}-form.tsx
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { entitySchema, type EntityFormValues } from './entity-schema'
+
+export function EntityForm() {
+  const form = useForm<EntityFormValues>({
+    resolver: zodResolver(entitySchema),
+    mode: 'onSubmit', // para performance
+    defaultValues: { name: '', amount: 0 },
+  })
+
+  // ... render con shadcn/ui Form components
+}
+```
+
+## Definicion de columnas
+
+Las columnas de tablas se definen en archivos separados para reutilizacion:
+
+```tsx
+// lib/{entity}-columns.tsx
+import type { ColumnDef } from '@tanstack/react-table'
+import type { Entity } from '../types'
+import { formatCurrency } from '@/lib/format'
+
+export const entityColumns: ColumnDef<Entity>[] = [
+  {
+    accessorKey: 'name',
+    header: 'Nombre',
+  },
+  {
+    accessorKey: 'amount',
+    header: 'Monto',
+    cell: ({ row }) => formatCurrency(row.original.amount),
+  },
+]
+```
+
+## Patron de constantes
+
+Las constantes de cada dominio se centralizan en archivos dedicados:
+
+```typescript
+// lib/{entity}-constants.ts
+export const STATUS_OPTIONS = [
+  { value: 'borrador', label: 'Borrador' },
+  { value: 'en_curso', label: 'En Curso' },
+  { value: 'completado', label: 'Completado' },
+  { value: 'cancelado', label: 'Cancelado' },
+] as const
+
+export const STATUS_LABELS: Record<string, string> = {
+  borrador: 'Borrador',
+  en_curso: 'En Curso',
+  completado: 'Completado',
+  cancelado: 'Cancelado',
+}
+
+export const STATUS_COLORS: Record<string, string> = {
+  borrador: 'bg-gray-100 text-gray-800',
+  en_curso: 'bg-blue-100 text-blue-800',
+  completado: 'bg-green-100 text-green-800',
+  cancelado: 'bg-red-100 text-red-800',
+}
+```

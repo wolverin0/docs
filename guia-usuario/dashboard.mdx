@@ -1,0 +1,86 @@
+---
+title: Dashboard
+description: Resumen ejecutivo con KPIs, rankings y proyecciones
+---
+
+# Dashboard
+
+El Dashboard es la pantalla principal del sistema. Ofrece un resumen ejecutivo de la actividad financiera, los eventos y las tareas pendientes.
+
+## KPIs
+
+Se muestran 7 tarjetas de indicadores clave en la parte superior:
+
+| KPI | Descripcion |
+|-----|-------------|
+| **Total Pagado** | Suma de todos los pagos con estado `pagado` en el periodo seleccionado |
+| **Total Pendiente** | Suma de pagos con estado `pendiente` |
+| **Pagos Vencidos** | Cantidad de pagos cuya fecha de pago ya paso sin ser pagados |
+| **Factura A** | Total facturado en comprobantes tipo A (Responsable Inscripto) |
+| **Factura C** | Total facturado en comprobantes tipo C (Monotributo/Consumidor Final) |
+| **IVA Total** | Suma del IVA de todos los pagos del periodo |
+| **Retenciones** | Total de retenciones (IIBB + Ganancias + IVA) aplicadas |
+
+<Tip>
+  Todos los montos se muestran en ARS (pesos argentinos) con formato de moneda local.
+</Tip>
+
+## Filtros de fecha
+
+Podes filtrar todos los KPIs y rankings por periodo usando los botones rapidos o fechas personalizadas:
+
+| Filtro | Comportamiento |
+|--------|---------------|
+| **Este mes** | Desde el 1ro hasta el ultimo dia del mes actual |
+| **Este trimestre** | Trimestre calendario actual (ene-mar, abr-jun, jul-sep, oct-dic) |
+| **Este ano** | Del 1 de enero al 31 de diciembre del ano actual |
+| **Todo** | Sin filtro de fecha, muestra todos los datos historicos |
+| **Personalizado** | Campos `Desde` y `Hasta` para rango libre |
+
+<Info>
+  Al usar fechas personalizadas, los botones rapidos se desactivan automaticamente. Al presionar un boton rapido, se limpian las fechas personalizadas.
+</Info>
+
+## Rankings
+
+Los rankings se muestran en pestanas y permiten identificar rapidamente los principales actores:
+
+<Tabs>
+  <Tab title="Proveedores">
+    Top 10 proveedores ordenados por monto total pagado. Muestra nombre, categoria y monto acumulado.
+  </Tab>
+  <Tab title="Clientes">
+    Top 10 clientes ordenados por facturacion total. Muestra nombre y monto total de eventos asociados.
+  </Tab>
+  <Tab title="Eventos">
+    Top 10 eventos ordenados por costo total. Muestra nombre del evento, cliente, estado y costo total.
+  </Tab>
+  <Tab title="Pendiente por Proveedor">
+    Proveedores con pagos pendientes, ordenados por monto adeudado de mayor a menor.
+  </Tab>
+</Tabs>
+
+## Proximos eventos
+
+Tabla con los proximos eventos programados que incluye:
+
+- Nombre del evento (clickeable, lleva al detalle)
+- Cliente asociado
+- Fecha del evento
+- Estado (Borrador, En Curso, Completado, Cancelado)
+
+## Proyeccion de cash flow
+
+Vista mensual que muestra la proyeccion de flujo de caja basada en:
+
+- **Pagos programados**: Pagos pendientes con fecha de pago futura
+- **Cobros esperados**: Facturas emitidas pendientes de cobro
+- **Balance proyectado**: Diferencia entre cobros y pagos
+
+## Mis tareas
+
+Widget integrado que muestra las tareas asignadas al usuario logueado:
+
+- Filtradas por estado (pendientes y en progreso)
+- Ordenadas por prioridad y fecha de vencimiento
+- Click en una tarea navega directamente a su detalle en el evento correspondiente

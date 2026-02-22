@@ -1,0 +1,137 @@
+---
+title: Paginas Publicas
+description: Paginas sin autenticacion para invitados, asistentes y compradores
+---
+
+# Paginas Publicas
+
+Impulsa CRM incluye 8 rutas publicas que no requieren autenticacion. Estas paginas estan disenadas para invitados, asistentes y compradores de entradas.
+
+<Warning>
+  Las paginas publicas solo estan disponibles cuando el evento tiene la opcion **Pagina publica habilitada** en la pestana Configuracion.
+</Warning>
+
+## Rutas publicas
+
+<AccordionGroup>
+  <Accordion title="/e/{slug} - Pagina del evento">
+    **Pagina principal publica del evento.**
+
+    Muestra informacion general del evento para visitantes externos:
+    - Nombre y descripcion del evento
+    - Fecha, hora y lugar
+    - Imagen de portada (si esta configurada)
+    - Detalles del venue
+    - Botones de accion segun el modo del evento:
+      - **Solo invitados**: Boton de RSVP
+      - **Entradas publicas**: Boton de compra de entradas
+      - **Hibrido**: Ambas opciones
+
+    El slug es configurable desde la pestana Configuracion del evento (ej. `fiesta-fin-de-ano-2026`).
+  </Accordion>
+
+  <Accordion title="/e/{slug}/tickets - Checkout de entradas">
+    **Pagina de compra de entradas.**
+
+    Flujo de compra:
+    1. Seleccion de tipo de entrada y cantidad
+    2. Aplicacion de codigo promocional (opcional)
+    3. Formulario con datos del comprador (nombre, email)
+    4. Respuesta a preguntas personalizadas del evento (si las hay)
+    5. Procesamiento del pago via MercadoPago
+    6. Confirmacion con QR code de la entrada
+
+    <Info>
+      El checkout integra MercadoPago a traves de Edge Functions (`mercadopago-checkout` y `mercadopago-webhook`) para procesar pagos de forma segura.
+    </Info>
+  </Accordion>
+
+  <Accordion title="/e/{slug}/scan - Escaner QR">
+    **Escaner de codigos QR para check-in.**
+
+    Herramienta para el organizador del evento:
+    - Usa la camara del dispositivo para escanear QR de asistentes
+    - Valida el QR contra la base de datos
+    - Registra el check-in con timestamp
+    - Muestra datos del asistente al escanear
+    - Funciona en mobile y desktop con acceso a camara
+
+    <Tip>
+      Ideal para usar desde un celular o tablet en la puerta del evento.
+    </Tip>
+  </Accordion>
+
+  <Accordion title="/e/{slug}/checkin - Self check-in">
+    **Pagina de auto-registro para asistentes.**
+
+    Los asistentes pueden hacer check-in ellos mismos:
+    - Ingresan su email o escanean su propio QR
+    - El sistema valida su registro
+    - Se marca como checked-in automaticamente
+    - Configuracion del modo check-in: `self_checkin` o `both` en el evento
+
+    Util para eventos con kioscos de registro o pantallas touch en la entrada.
+  </Accordion>
+
+  <Accordion title="/rsvp/{token} - Confirmacion RSVP">
+    **Pagina de confirmacion de asistencia.**
+
+    Cada invitado recibe un link unico con token:
+    - Muestra los detalles del evento
+    - Opciones de respuesta: **Acepto**, **Declino**, **Quizas**
+    - Al confirmar, actualiza el estado RSVP del asistente en la base de datos
+    - Mensaje de confirmacion despues de responder
+
+    Los links se generan y envian desde la pestana **Invitaciones** del evento.
+  </Accordion>
+
+  <Accordion title="/survey/{token} - Encuesta">
+    **Pagina de encuesta post-evento.**
+
+    Formulario de encuesta con token unico por asistente:
+    - Mensaje de bienvenida personalizado
+    - Preguntas configuradas por el organizador (texto, opciones, rating, NPS, si/no)
+    - Validacion de campos requeridos
+    - Mensaje de agradecimiento al enviar
+    - Las respuestas se almacenan vinculadas al asistente
+
+    Los links se generan automaticamente y se pueden enviar manualmente o de forma programada (X dias despues del evento).
+  </Accordion>
+
+  <Accordion title="/embed/{slug} - Widget embebible">
+    **Widget de evento para incrustar en sitios externos.**
+
+    Genera un componente ligero que puede embeberse en cualquier pagina web:
+    - Informacion basica del evento (nombre, fecha, lugar)
+    - Boton de accion (comprar entradas o confirmar asistencia)
+    - Disenado para insertarse via `<iframe>` en sitios de terceros
+    - Estilos minimalistas que se adaptan al sitio anfitrion
+
+    ```html
+    <iframe
+      src="https://impulsa-flax.vercel.app/embed/mi-evento"
+      width="400"
+      height="300"
+      frameborder="0">
+    </iframe>
+    ```
+  </Accordion>
+
+  <Accordion title="/calendar/feed - Feed de calendario">
+    **Feed iCal con eventos proximos.**
+
+    URL publica que devuelve un feed en formato iCalendar (.ics):
+    - Contiene todos los eventos publicos proximos
+    - Compatible con Google Calendar, Apple Calendar, Outlook
+    - Se actualiza automaticamente al agregar o modificar eventos
+    - Permite suscripcion desde cualquier cliente de calendario
+
+    ```
+    https://impulsa-flax.vercel.app/calendar/feed
+    ```
+
+    <Tip>
+      Los usuarios tambien pueden descargar archivos `.ics` individuales desde el detalle de cada evento con el boton "Exportar iCal".
+    </Tip>
+  </Accordion>
+</AccordionGroup>

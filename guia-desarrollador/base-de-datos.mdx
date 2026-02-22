@@ -1,0 +1,162 @@
+---
+title: Base de Datos
+description: Migraciones, convenciones de PostgreSQL y sistema de autenticacion
+---
+
+# Base de Datos
+
+Impulsa CRM utiliza **Supabase** (PostgreSQL) como base de datos, con Row Level Security (RLS) en todas las tablas y Edge Functions para operaciones privilegiadas.
+
+## Migraciones
+
+Las migraciones se encuentran en `supabase/migrations/` y se aplican con `npx supabase db push --linked`. Estan numeradas secuencialmente:
+
+| Migracion | Descripcion |
+|-----------|-------------|
+| `00001_initial_schema.sql` | Schema inicial: providers, clients, user_roles |
+| `00002_phase2_schema_updates.sql` | Actualizaciones de phase 2 |
+| `00003_phase3_events.sql` | Tabla events, event_costs, event_providers |
+| `00004_authorize_fallback.sql` | Funcion `authorize()` con fallback a tabla user_roles |
+| `00005_phase4_payments.sql` | Tabla payments con retenciones y neto calculado |
+| `00006_dashboard_views.sql` | Vistas materializadas para KPIs del dashboard |
+| `00007_phase8_documents.sql` | Facturas con items JSONB y soporte AFIP |
+| `00008_company_settings.sql` | Tabla company_settings para configuracion |
+| `00009_categories.sql` | Categorias configurables |
+| `00010_event_templates.sql` | Plantillas de evento |
+| `00011_categories_extended.sql` | Extension de categorias (costos y proveedores) |
+| `00012_retencion_config.sql` | Configuracion de retenciones por proveedor |
+| `00013_notas.sql` | Notas de credito y debito |
+| `00014_payment_approval.sql` | Flujo de aprobacion de pagos |
+| `00015_afip_fields.sql` | Campos AFIP en facturas (CAE, entorno, errores) |
+| `00016_whatsapp_notifications.sql` | Configuracion de notificaciones WhatsApp |
+| `00017_bot_status.sql` | Estado de conexion del bot WhatsApp |
+| `00018_presupuesto_v2_costs_tasks.sql` | Presupuesto V2 (opciones, secciones) y sistema de tareas |
+| `00019_task_system_v2.sql` | Sistema de tareas V2 (checklists, comentarios, adjuntos, links, labels) |
+| `00020_storage_policies.sql` | Politicas de Supabase Storage para adjuntos |
+| `00021_user_groups_multi_assign.sql` | Grupos de usuarios y asignacion multiple |
+| `00022_public_events_attendees.sql` | Eventos publicos, asistentes, slugs, modos de evento |
+| `00023_activity_logs_general.sql` | Logs de actividad generalizados |
+| `00024_saved_views.sql` | Vistas guardadas para filtros |
+| `00025_workflows.sql` | Tabla workflows, workflow_runs |
+| `00026_tickets_orders.sql` | Entradas, ordenes, items de orden, codigos promo |
+| `00027_checkin_logs.sql` | Logs de check-in con metodo y accion |
+| `00028_invitations_rsvp.sql` | Batches de invitacion, links RSVP |
+| `00029_surveys.sql` | Encuestas, preguntas, respuestas, links |
+| `00030_email_templates.sql` | Plantillas de email con tokens |
+
+<Warning>
+  Las migraciones son acumulativas e idempotentes. Nunca modifiques una migracion existente; siempre crea una nueva.
+</Warning>
+
+## Convenciones de base de datos clave
+
+### Tipos de datos
+
+| Convencion | Detalle |
+|-----------|---------|
+| **Dinero** | Siempre `NUMERIC(15,2)`, nunca `float` o `real` |
+| **IDs** | `UUID` con `gen_random_uuid()` como default |
+| **Timestamps** | `TIMESTAMPTZ` con `now()` como default |
+| **Enums** | Definidos como `TEXT` con restriccion `CHECK` |
+| **JSON** | `JSONB` para datos flexibles (items de factura, configuracion, respuestas) |
+| **Campos calculados** | `GENERATED ALWAYS AS` para total_cost, neto, dias_al_pago, etc. |
+
+### Row Level Security (RLS)
+
+Todas las tablas tienen RLS habilitado. Las politicas usan la funcion `public.authorize()`:
+
+```sql
+CREATE POLICY "allow_all_for_authorized"
+  ON public.tabla
+  FOR ALL
+  USING (public.authorize(ARRAY['admin', 'produccion', 'finanzas']))
+  WITH CHECK (public.authorize(ARRAY['admin', 'produccion', 'finanzas']));
+```
+
+### Funcion `authorize()`
+
+La funcion `authorize()` verifica el rol del usuario autenticado:
+
+1. **Primer intento**: Lee el claim `user_role` del JWT (`auth.jwt() -> 'user_role'`)
+2. **Fallback**: Si el claim no existe, busca en la tabla `user_roles`
+3. **Comparacion**: Verifica si el rol esta en la lista de roles permitidos
+
+```sql
+CREATE OR REPLACE FUNCTION public.authorize(allowed_roles text[])
+RETURNS boolean AS $$
+DECLARE
+  user_role text;
+BEGIN
+  -- Try JWT claim first
+  user_role := (auth.jwt() -> 'user_role')::text;
+
+  -- Fallback to user_roles table
+  IF user_role IS NULL THEN
+    SELECT role INTO user_role
+    FROM public.user_roles
+    WHERE user_id = auth.uid();
+  END IF;
+
+  RETURN user_role = ANY(allowed_roles);
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+```
+
+<Info>
+  El fallback a la tabla `user_roles` permite que el sistema funcione sin el Custom Access Token Hook de Supabase habilitado (util en desarrollo).
+</Info>
+
+## Sistema de autenticacion
+
+### Flujo de autenticacion
+
+<Steps>
+  <Step title="Login">
+    El usuario ingresa email y contrasena. Supabase Auth valida y devuelve un JWT.
+  </Step>
+  <Step title="JWT con rol">
+    El Custom Access Token Hook de Supabase inyecta el `user_role` como claim en el JWT.
+  </Step>
+  <Step title="Frontend">
+    El `auth-provider.tsx` lee el rol del JWT y lo expone via Context a toda la app.
+  </Step>
+  <Step title="RLS">
+    Cada query a Supabase incluye el JWT. Las politicas RLS verifican el rol usando `authorize()`.
+  </Step>
+</Steps>
+
+### Roles y permisos
+
+| Rol | Tablas con acceso completo | Restricciones |
+|-----|---------------------------|---------------|
+| `admin` | Todas | Ninguna |
+| `produccion` | events, event_costs, event_providers, tasks, providers, clients, presupuestos, payments | Sin acceso a facturas, recibos, notas, settings, user_roles |
+| `finanzas` | events, payments, facturas, recibos, notas, providers, clients, presupuestos | Sin acceso a settings, user_roles, workflows |
+
+## Edge Functions
+
+Las Edge Functions de Supabase se encuentran en `supabase/functions/` y manejan operaciones que requieren permisos elevados:
+
+| Funcion | Descripcion |
+|---------|-------------|
+| `afip-emit` | Emision de facturas electronicas via AFIP |
+| `create-user` | Creacion de usuarios con contrasena |
+| `invite-user` | Invitacion de usuarios con link de configuracion |
+| `manage-user` | Gestion de cuentas (activar/desactivar) |
+| `mercadopago-checkout` | Creacion de preferencia de pago en MercadoPago |
+| `mercadopago-webhook` | Recepcion de notificaciones de MercadoPago |
+| `send-email` | Envio de emails transaccionales |
+| `workflow-execute` | Ejecucion de pasos de workflow |
+
+## Rutas publicas (sin RLS)
+
+Algunas tablas tienen politicas especiales para acceso publico (sin autenticacion):
+
+| Tabla | Politica publica | Uso |
+|-------|-----------------|-----|
+| `events` | SELECT donde `public_page_enabled = true` | Pagina publica del evento |
+| `attendees` | SELECT/UPDATE via `qr_code_token` | Self check-in |
+| `tickets` | SELECT donde `is_active = true` | Listado de entradas |
+| `orders` | INSERT para crear ordenes | Compra de entradas |
+| `survey_links` | SELECT/UPDATE via `token` | Encuestas publicas |
+| `survey_responses` | INSERT | Envio de respuestas |

@@ -1,0 +1,167 @@
+---
+title: Presupuestos
+description: Presupuestos V1 y V2 con secciones, opciones y conversion a evento
+---
+
+# Presupuestos
+
+El modulo de Presupuestos permite crear cotizaciones para clientes en dos formatos: V1 (items planos) y V2 (jerarquia de opciones y secciones). Ambas versiones soportan generacion de PDF y vinculacion con eventos.
+
+## Listado de presupuestos
+
+Tabla con todos los presupuestos del sistema:
+
+| Columna | Descripcion |
+|---------|-------------|
+| **#** | Numero correlativo |
+| **Cliente** | Cliente asociado |
+| **Evento** | Evento vinculado (si existe) |
+| **Fecha** | Fecha de emision |
+| **Validez** | Fecha de vencimiento |
+| **Subtotal** | Monto antes de IVA |
+| **IVA** | Monto de IVA |
+| **Total** | Monto total con IVA |
+| **Estado** | Badge de estado |
+
+### Estados de presupuesto
+
+| Estado | Color | Descripcion |
+|--------|-------|-------------|
+| **Borrador** | Gris | En proceso de confeccion |
+| **Enviado** | Azul | Enviado al cliente para revision |
+| **Aceptado** | Verde | Aprobado por el cliente |
+| **Rechazado** | Rojo | No aceptado por el cliente |
+| **Vencido** | Amarillo | Supero la fecha de validez sin respuesta |
+
+### Acciones del listado
+
+- **Nuevo Presupuesto**: Crea un presupuesto V2 (formato actual)
+- **Exportar**: Descarga a Excel
+- **Filtros**: Por estado, cliente, rango de fechas
+
+## Presupuesto V1 (items planos)
+
+<Warning>
+  V1 es el formato legacy. Los nuevos presupuestos se crean en formato V2. Los presupuestos V1 existentes siguen siendo visualizables y editables.
+</Warning>
+
+Estructura simple con una lista plana de items:
+
+| Campo | Descripcion |
+|-------|-------------|
+| **Descripcion** | Texto del item |
+| **Cantidad** | Numero de unidades |
+| **Precio unitario** | Precio por unidad |
+| **Subtotal** | Calculado automaticamente |
+
+Totales:
+- **Subtotal**: Suma de todos los items
+- **IVA %**: Porcentaje de IVA aplicado (configurable)
+- **IVA**: Monto de IVA calculado
+- **Total**: Subtotal + IVA
+
+## Presupuesto V2 (secciones y opciones)
+
+El formato V2 organiza el presupuesto en una jerarquia de tres niveles:
+
+```
+Presupuesto
+  └── Opciones (ej. "Opcion A - Premium", "Opcion B - Standard")
+       └── Secciones (ej. "Gastronomia", "Tecnica", "Ambientacion")
+            └── Items (ej. "Catering para 200 personas")
+```
+
+### Estructura
+
+<AccordionGroup>
+  <Accordion title="Opciones">
+    Cada presupuesto puede tener multiples opciones que representan alternativas para el cliente:
+
+    | Campo | Descripcion |
+    |-------|-------------|
+    | **Nombre** | Nombre de la opcion (ej. "Opcion Premium") |
+    | **Orden** | Posicion en la lista |
+    | **Principal** | Marca la opcion recomendada (solo una) |
+
+    Las opciones permiten al cliente comparar diferentes propuestas dentro del mismo presupuesto.
+  </Accordion>
+
+  <Accordion title="Secciones">
+    Dentro de cada opcion, las secciones agrupan items por categoria:
+
+    | Campo | Descripcion |
+    |-------|-------------|
+    | **Nombre** | Nombre de la seccion (ej. "Gastronomia") |
+    | **Orden** | Posicion dentro de la opcion |
+    | **Items** | Lista de items de la seccion |
+
+    Las secciones pueden vincularse a tareas del evento (para el tablero kanban).
+  </Accordion>
+
+  <Accordion title="Items">
+    Cada item representa un renglon del presupuesto:
+
+    | Campo | Descripcion |
+    |-------|-------------|
+    | **Descripcion** | Texto del item |
+    | **Cantidad** | Numero de unidades |
+    | **Precio unitario** | Precio por unidad en ARS |
+    | **Subtotal** | Calculado (cantidad x precio) |
+    | **Detalles** | Descripcion extendida (opcional) |
+    | **Es titulo** | Toggle para items que son solo encabezados (sin precio) |
+    | **Orden** | Posicion dentro de la seccion |
+  </Accordion>
+</AccordionGroup>
+
+### Campos adicionales V2
+
+| Campo | Descripcion |
+|-------|-------------|
+| **Fee %** | Porcentaje de fee de agencia |
+| **Descuento %** | Descuento porcentual |
+| **Descuento fijo** | Descuento en monto fijo (ARS) |
+| **Validez (dias)** | Dias de validez desde la fecha de emision |
+| **PAX** | Cantidad de personas |
+| **Tematica** | Tematica del evento |
+| **Lugar** | Lugar del evento |
+| **Incluye IVA** | Toggle si los precios ya incluyen IVA |
+| **Version** | Numero de version del presupuesto |
+
+## Conversion a evento
+
+Desde un presupuesto aceptado, se puede crear un evento automaticamente:
+
+<Steps>
+  <Step title="Aceptar presupuesto">
+    Cambiar el estado del presupuesto a "Aceptado".
+  </Step>
+  <Step title="Crear evento">
+    Usar el boton "Crear evento desde presupuesto" que aparece en presupuestos aceptados.
+  </Step>
+  <Step title="Datos pre-cargados">
+    El evento se crea con:
+    - Nombre basado en el presupuesto
+    - Cliente del presupuesto
+    - Costos importados desde las secciones/items
+    - Tareas vinculadas a las secciones (V2)
+  </Step>
+</Steps>
+
+<Tip>
+  Tambien podes crear un presupuesto desde un evento existente usando el boton "Presupuesto desde costos" en el detalle del evento. Esto pre-carga los items del presupuesto con los costos del evento.
+</Tip>
+
+## Generacion de PDF
+
+Cada presupuesto puede exportarse como PDF profesional:
+
+- **Header**: Logo de la empresa, razon social, CUIT, direccion
+- **Datos del cliente**: Nombre, razon social, CUIT
+- **Tabla de items**: Con todas las secciones y opciones (V2) o items planos (V1)
+- **Totales**: Subtotal, fee, descuentos, IVA, total final
+- **Notas**: Texto libre al pie del presupuesto
+- **Condiciones**: Validez, forma de pago
+
+<Info>
+  El PDF se genera en el navegador usando jsPDF + autoTable, sin necesidad de conexion a internet.
+</Info>

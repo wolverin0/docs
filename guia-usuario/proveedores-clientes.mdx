@@ -1,0 +1,158 @@
+---
+title: Proveedores y Clientes
+description: Gestion de proveedores con categorias y clientes con resumen financiero
+---
+
+# Proveedores y Clientes
+
+## Proveedores
+
+El directorio de proveedores centraliza la informacion de todos los prestadores de servicios con los que trabaja la agencia.
+
+### Listado de proveedores
+
+Tabla con todos los proveedores del sistema:
+
+| Columna | Descripcion |
+|---------|-------------|
+| **#** | Numero interno del sistema |
+| **Nombre** | Nombre comercial del proveedor |
+| **Servicio** | Tipo de servicio que ofrece |
+| **Categoria** | Categoria del proveedor |
+| **CUIT** | Numero de identificacion fiscal |
+| **WhatsApp** | Numero de telefono para notificaciones |
+| **Estado** | Activo / Inactivo |
+
+**Acciones del listado**:
+- **Nuevo Proveedor**: Abre el formulario de creacion
+- **Importar Excel**: Carga masiva de proveedores
+- **Exportar**: Descarga a Excel
+- **Filtros**: Por categoria, estado (activo/inactivo) y busqueda por texto
+
+### Categorias de proveedores
+
+Las categorias son configurables desde **Configuracion** y las predeterminadas son:
+
+| Categoria |
+|-----------|
+| Tecnica |
+| Ambientacion |
+| Livings |
+| Audiovisuales |
+| Grafica |
+| Logistica |
+| Regalos corporativos |
+| Gastronomia |
+
+### Crear / Editar proveedor
+
+Formulario con los siguientes campos:
+
+| Campo | Tipo | Requerido |
+|-------|------|-----------|
+| **Nombre** | Texto | Si |
+| **Razon Social** | Texto | No |
+| **Servicio** | Texto | No |
+| **Categoria** | Selector | No |
+| **CUIT** | Texto (validado) | No |
+| **CBU** | Texto | No |
+| **Banco** | Texto | No |
+| **Cuenta Corriente** | Texto | No |
+| **Alias** | Texto | No |
+| **Numero de Cuenta** | Texto | No |
+| **WhatsApp** | Telefono | No |
+| **Notas** | Textarea | No |
+| **Activo** | Toggle | Si (default: true) |
+
+<Tip>
+  Los datos bancarios (CBU, banco, alias) se auto-completan en el formulario de pagos al seleccionar el proveedor.
+</Tip>
+
+### Detalle del proveedor
+
+Pagina de detalle que muestra:
+
+- Informacion completa del proveedor
+- Historial de pagos vinculados
+- Eventos en los que participo
+- Totales acumulados (pagado, pendiente)
+
+### Importar desde Excel
+
+<Steps>
+  <Step title="Descargar plantilla">
+    Descargar el archivo Excel de plantilla con las columnas esperadas.
+  </Step>
+  <Step title="Completar datos">
+    Llenar las filas con los datos de los proveedores.
+  </Step>
+  <Step title="Subir archivo">
+    Usar el dialogo de importacion para seleccionar el archivo Excel.
+  </Step>
+  <Step title="Validacion">
+    El sistema valida los datos y muestra errores si los hay antes de confirmar la importacion.
+  </Step>
+</Steps>
+
+---
+
+## Clientes
+
+El directorio de clientes gestiona la cartera de empresas e individuos que contratan los servicios de la agencia.
+
+### Listado de clientes
+
+Tabla con todos los clientes:
+
+| Columna | Descripcion |
+|---------|-------------|
+| **Nombre** | Nombre del cliente |
+| **Razon Social** | Razon social (si es empresa) |
+| **CUIT** | Numero fiscal |
+| **Email** | Correo electronico |
+| **Tipo** | Individuo o Empresa |
+| **Condicion Fiscal** | Responsable Inscripto, Monotributo, Exento |
+| **Estado** | Activo / Inactivo |
+
+**Acciones del listado**:
+- **Nuevo Cliente**: Abre formulario de creacion
+- **Exportar**: Descarga a Excel
+- **Busqueda**: Por nombre o razon social
+
+### Crear / Editar cliente
+
+| Campo | Tipo | Requerido |
+|-------|------|-----------|
+| **Nombre** | Texto | Si |
+| **Razon Social** | Texto | No |
+| **CUIT** | Texto (validado) | No |
+| **Email** | Email | No |
+| **Telefono** | Telefono | No |
+| **Sitio Web** | URL | No |
+| **Direccion** | Texto | No |
+| **Tipo** | Selector (Individuo/Empresa) | No |
+| **Condicion Fiscal** | Selector | No |
+| **Notas** | Textarea | No |
+| **Activo** | Toggle | Si (default: true) |
+
+### Condiciones fiscales
+
+| Condicion | Descripcion |
+|-----------|-------------|
+| Responsable Inscripto | Factura A |
+| Monotributo | Factura C |
+| Exento | Factura C |
+| Consumidor Final | Factura B |
+| Sujeto No Categorizado | Sin clasificar |
+| Proveedor del Exterior | Operaciones internacionales |
+| Cliente del Exterior | Operaciones internacionales |
+
+### Detalle del cliente
+
+La pagina de detalle muestra:
+
+- **Informacion completa** del cliente
+- **Eventos asociados**: Lista de todos los eventos del cliente
+- **Resumen financiero**: Total facturado, presupuestado y pagado
+- **Facturas**: Lista de facturas emitidas al cliente
+- **Presupuestos**: Presupuestos enviados al cliente

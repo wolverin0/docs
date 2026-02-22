@@ -1,0 +1,107 @@
+---
+title: Inicio para Desarrolladores
+description: Stack tecnologico, instalacion y primeros pasos
+---
+
+# Inicio para Desarrolladores
+
+## Vision general del proyecto
+
+Impulsa CRM es una aplicacion single-page (SPA) construida con React y TypeScript, desplegada en Vercel, con Supabase como backend (base de datos PostgreSQL, autenticacion, storage y edge functions).
+
+La interfaz de usuario esta completamente en **espanol** y la moneda es **ARS** (peso argentino).
+
+## Stack tecnologico
+
+| Capa | Tecnologia | Version |
+|------|-----------|---------|
+| **Frontend** | React | 19.2 |
+| **Lenguaje** | TypeScript | 5.9 |
+| **Bundler** | Vite | 7.3 |
+| **Routing** | TanStack Router (file-based) | 1.161 |
+| **Data Fetching** | TanStack Query | 5.90 |
+| **Tablas** | TanStack Table | 8.21 |
+| **Formularios** | react-hook-form + zod | 7.71 / 4.3 |
+| **UI Components** | shadcn/ui + Radix UI | ultima |
+| **Estilos** | Tailwind CSS | 4.2 |
+| **Base de datos** | Supabase (PostgreSQL) | - |
+| **Autenticacion** | Supabase Auth (JWT) | - |
+| **Storage** | Supabase Storage | - |
+| **Edge Functions** | Supabase Edge Functions (Deno) | - |
+| **Drag & Drop** | @hello-pangea/dnd | 18.0 |
+| **Calendario** | FullCalendar | 6.1 |
+| **Flow Editor** | @xyflow/react (React Flow) | 12.10 |
+| **Rich Text** | TipTap | 3.20 |
+| **QR Codes** | qrcode.react + qr-scanner | 4.2 / 1.4 |
+| **PDF** | jsPDF + jspdf-autotable | 4.2 / 5.0 |
+| **Excel** | ExcelJS + SheetJS (xlsx) | 4.4 / 0.18 |
+| **Fechas** | date-fns | 4.1 |
+| **Command Palette** | cmdk | 1.1 |
+| **Iconos** | lucide-react | 0.575 |
+| **Tema** | next-themes | 0.4 |
+| **Notificaciones** | sonner | 2.0 |
+| **Testing E2E** | Playwright | 1.58 |
+| **Linting** | ESLint + typescript-eslint | 9.39 |
+
+## Primeros pasos
+
+### Pre-requisitos
+
+- **Node.js** >= 20
+- **npm** >= 10
+- Un proyecto de **Supabase** con las migraciones aplicadas
+- Variables de entorno configuradas
+
+### Instalacion
+
+<Steps>
+  <Step title="Clonar el repositorio">
+    ```bash
+    git clone https://github.com/tu-usuario/impulsa-crm.git
+    cd impulsa-crm
+    ```
+  </Step>
+  <Step title="Instalar dependencias">
+    ```bash
+    npm install
+    ```
+  </Step>
+  <Step title="Configurar variables de entorno">
+    Crear un archivo `.env` en la raiz del proyecto:
+
+    ```env
+    VITE_SUPABASE_URL=https://tu-proyecto.supabase.co
+    VITE_SUPABASE_ANON_KEY=tu-anon-key
+    ```
+  </Step>
+  <Step title="Iniciar el servidor de desarrollo">
+    ```bash
+    npm run dev
+    ```
+
+    El servidor se inicia en `http://localhost:5173` (o el siguiente puerto disponible).
+  </Step>
+  <Step title="Acceder al sistema">
+    Usa las credenciales de desarrollo:
+    - **Email**: `admin@impulsa.com`
+    - **Password**: `Impulsa2026!`
+  </Step>
+</Steps>
+
+### Comandos disponibles
+
+| Comando | Descripcion |
+|---------|-------------|
+| `npm run dev` | Inicia el servidor de desarrollo (Vite, puerto 5173+) |
+| `npm run build` | Build de produccion (`tsc -b && vite build`) |
+| `npm run lint` | Ejecuta ESLint sobre todo el proyecto |
+| `npm run preview` | Preview del build de produccion |
+| `npx tsc --noEmit` | Verifica tipos de TypeScript sin compilar |
+| `npx playwright test` | Ejecuta los tests E2E (26 tests) |
+| `npx playwright test --headed` | Ejecuta los tests con navegador visible |
+| `npx playwright test --ui` | Abre el picker interactivo de tests |
+| `npx supabase db push --linked` | Aplica migraciones pendientes en Supabase |
+
+<Warning>
+  Siempre ejecuta `npm run build` antes de hacer push. El build incluye chequeo de tipos de TypeScript y detecta errores que no se ven en desarrollo.
+</Warning>

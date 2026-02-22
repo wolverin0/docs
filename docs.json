@@ -1,122 +1,74 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "Mint Starter Kit",
+  "name": "Impulsa CRM",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#10b981",
+    "light": "#34d399",
+    "dark": "#059669"
   },
   "favicon": "/favicon.svg",
   "navigation": {
     "tabs": [
       {
-        "tab": "Guides",
+        "tab": "Guia de Usuario",
         "groups": [
           {
-            "group": "Getting started",
+            "group": "Inicio",
             "pages": [
               "index",
-              "quickstart",
-              "development"
+              "guia-usuario/inicio-rapido"
             ]
           },
           {
-            "group": "Customization",
+            "group": "Modulos principales",
             "pages": [
-              "essentials/settings",
-              "essentials/navigation"
+              "guia-usuario/dashboard",
+              "guia-usuario/eventos",
+              "guia-usuario/tareas",
+              "guia-usuario/pagos",
+              "guia-usuario/proveedores-clientes",
+              "guia-usuario/presupuestos",
+              "guia-usuario/facturacion"
             ]
           },
           {
-            "group": "Writing content",
+            "group": "Funciones avanzadas",
             "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/reusable-snippets"
-            ]
-          },
-          {
-            "group": "AI tools",
-            "pages": [
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
+              "guia-usuario/paginas-publicas",
+              "guia-usuario/workflows",
+              "guia-usuario/plantillas-email",
+              "guia-usuario/administracion"
             ]
           }
         ]
       },
       {
-        "tab": "API reference",
+        "tab": "Guia de Desarrollador",
         "groups": [
           {
-            "group": "API documentation",
+            "group": "Desarrollo",
             "pages": [
-              "api-reference/introduction"
-            ]
-          },
-          {
-            "group": "Endpoint examples",
-            "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
+              "guia-desarrollador/inicio",
+              "guia-desarrollador/arquitectura",
+              "guia-desarrollador/base-de-datos",
+              "guia-desarrollador/testing-deploy"
             ]
           }
         ]
       }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
-        }
-      ]
-    }
-  },
-  "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
+    ]
   },
   "navbar": {
-    "links": [
-      {
-        "label": "Support",
-        "href": "mailto:hi@mintlify.com"
-      }
-    ],
     "primary": {
       "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
+      "label": "Ir a Impulsa",
+      "href": "https://impulsa-crm.vercel.app"
     }
-  },
-  "contextual": {
-    "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
   },
   "footer": {
     "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
+      "github": "https://github.com/wolverin0/impulsa"
     }
   }
 }
