@@ -1,0 +1,69 @@
+{
+  "name": "Impulsa CRM",
+  "logo": {
+    "dark": "/logo/dark.svg",
+    "light": "/logo/light.svg"
+  },
+  "favicon": "/favicon.svg",
+  "colors": {
+    "primary": "#10b981",
+    "light": "#34d399",
+    "dark": "#059669"
+  },
+  "tabs": [
+    {
+      "name": "Guia de Usuario",
+      "url": "guia-usuario"
+    },
+    {
+      "name": "Guia de Desarrollador",
+      "url": "guia-desarrollador"
+    }
+  ],
+  "navigation": [
+    {
+      "group": "Inicio",
+      "pages": [
+        "index",
+        "guia-usuario/inicio-rapido"
+      ]
+    },
+    {
+      "group": "Modulos principales",
+      "pages": [
+        "guia-usuario/dashboard",
+        "guia-usuario/eventos",
+        "guia-usuario/tareas",
+        "guia-usuario/pagos",
+        "guia-usuario/proveedores-clientes",
+        "guia-usuario/presupuestos",
+        "guia-usuario/facturacion"
+      ]
+    },
+    {
+      "group": "Funciones avanzadas",
+      "pages": [
+        "guia-usuario/paginas-publicas",
+        "guia-usuario/workflows",
+        "guia-usuario/plantillas-email",
+        "guia-usuario/administracion"
+      ]
+    },
+    {
+      "group": "Desarrollo",
+      "pages": [
+        "guia-desarrollador/inicio",
+        "guia-desarrollador/arquitectura",
+        "guia-desarrollador/base-de-datos",
+        "guia-desarrollador/testing-deploy"
+      ]
+    }
+  ],
+  "topbarCtaButton": {
+    "name": "Ir a Impulsa",
+    "url": "https://impulsa-crm.vercel.app"
+  },
+  "footerSocials": {
+    "github": "https://github.com/wolverin0/impulsa"
+  }
+}
