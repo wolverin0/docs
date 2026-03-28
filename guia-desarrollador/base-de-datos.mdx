@@ -43,6 +43,18 @@ Las migraciones se encuentran en `supabase/migrations/` y se aplican con `npx su
 | `00028_invitations_rsvp.sql` | Batches de invitacion, links RSVP |
 | `00029_surveys.sql` | Encuestas, preguntas, respuestas, links |
 | `00030_email_templates.sql` | Plantillas de email con tokens |
+| `00031_notifications.sql` | Sistema de notificaciones |
+| `00032_security_hardening.sql` | Hardening de seguridad y RLS |
+| `00033_ai_conversations.sql` | Conversaciones con el Asistente IA |
+| `00034_ai_chat_fix.sql` | Fix para tabla ai_conversations |
+| `00035_cotizador_v2.sql` | Cotizador V2: categoria TEXT, multi-item, fee_pct, label, sort_order |
+| `00036_event_dynamics.sql` | Tabla event_dynamics (rompehielos, team building, actividades) |
+| `00037_fix_dynamics_trigger.sql` | Fix trigger updated_at para dynamics |
+| `00038_budget_vs_costs.sql` | Campo is_budget en event_costs, limpieza datos test |
+| `00039_staff.sql` | Tablas staff, event_staff, company_expenses |
+| `00040_fix_duplicate_fees.sql` | Limpieza de fees duplicados |
+| `00041_cost_paid_status.sql` | Campo is_paid en event_costs |
+| `00042_staff_paid_logos.sql` | Campo is_paid en event_staff |
 
 <Warning>
   Las migraciones son acumulativas e idempotentes. Nunca modifiques una migracion existente; siempre crea una nueva.

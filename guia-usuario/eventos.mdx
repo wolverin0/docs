@@ -1,11 +1,11 @@
 ---
 title: Eventos
-description: Gestion completa de eventos con 15 pestanas de funcionalidad
+description: Gestion completa de eventos con 17 pestanas de funcionalidad
 ---
 
 # Eventos
 
-El modulo de Eventos es el nucleo de Impulsa CRM. Cada evento representa un proyecto de planificacion con 15 pestanas que cubren todos los aspectos de la produccion, finanzas y logistica.
+El modulo de Eventos es el nucleo de Impulsa CRM. Cada evento representa un proyecto de planificacion con 17 pestanas que cubren todos los aspectos de la produccion, finanzas y logistica.
 
 ## Listado de eventos
 
@@ -65,37 +65,38 @@ La pagina de detalle muestra el nombre del evento, su estado (badge), el cliente
 - **Generar presupuesto**: Genera un PDF de presupuesto con los costos del evento
 - **Presupuesto desde costos**: Crea un presupuesto V2 pre-cargado con los costos del evento
 
-### Las 15 pestanas
+### Las 17 pestanas
 
 <AccordionGroup>
-  <Accordion title="1. General">
-    Informacion principal del evento en formato de ficha:
+  <Accordion title="1. General (Dashboard)">
+    Dashboard ejecutivo del evento con resumen visual de un vistazo:
 
-    - **Datos basicos**: Nombre, cliente, fecha inicio/fin, lugar, estado
-    - **Financieros**: Precio del cliente, costo total, venta total, margen (% y monto)
-    - **Modo del evento**: Solo invitados, Entradas publicas, o Hibrido
-    - **Slug**: URL amigable para la pagina publica (`/e/{slug}`)
-    - **Notas**: Texto libre para notas internas
-    - **Edicion inline**: Todos los campos son editables directamente desde esta vista
+    - **Fila 1 - Info basica**: Cliente (link), fecha (con cuenta regresiva), lugar, estado
+    - **Fila 2 - Financiero**: Presupuesto, costos reales, costo total, margen (monto y %)
+    - **Fila 3 - Operativo**:
+      - Tareas: progress bar de completadas, proximas vencidas
+      - Pagos: progress bar pagado vs pendiente
+      - Equipo: contadores de proveedores, personal, asistentes, dinamicas
+    - **Notas**: Si hay notas, se muestran al final
   </Accordion>
 
   <Accordion title="2. Costos">
-    Gestion de costos agrupados por categoria en acordeones colapsables.
+    Gestion de costos dividida en dos secciones:
 
-    **Categorias disponibles**: Locacion, Gastronomia, Tecnica, Ambientacion Generica, Ambientacion Lola, Mobiliario, Activacion Terciarizada, Activacion Propia, Show, Speakers, Audiovisual, Grafica, Equipo RH, Fee + Impuestos, Varios, Ticketing, Traslados, Kits/Regalos, Produccion, Teambuilding, Catering, Seguridad, Limpieza, Otros.
+    **PRESUPUESTO** (arriba): Items que se incluyen en el presupuesto del cliente.
+    - 19 categorias: Locacion, Gastronomia, Tecnica, Ambientacion, Mobiliario, Show, Speakers, Cobertura Foto, Grafica, Coordinacion, Fee, Varios, Ticketing, Traslados, Kits/Regalos, Produccion, Teambuilding, Catering, Seguridad
+    - Cada item tiene: costo unitario, cantidad, markup %, notas
+    - Fee auto-calculado (% configurable sobre el total)
+    - Se pueden agregar categorias custom
+    - Valores negativos permitidos (descuentos, bonificaciones)
 
-    Cada item de costo tiene:
-    | Campo | Descripcion |
-    |-------|-------------|
-    | **Categoria** | Seleccion de la lista de categorias |
-    | **Costo unitario** | Precio por unidad |
-    | **Cantidad** | Numero de unidades |
-    | **Costo total** | Calculado automaticamente (unitario x cantidad) |
-    | **Markup %** | Porcentaje de margen aplicado |
-    | **Venta total** | Calculado automaticamente (costo + markup) |
-    | **Notas** | Descripcion o detalle del costo |
+    **COSTOS REALES / GASTOS** (abajo, separado por linea naranja): Gastos reales del evento.
+    - No aparecen en el presupuesto PDF
+    - Si impactan la rentabilidad
+    - Tienen checkbox de pagado/no pagado
+    - Personal asignado se muestra automaticamente como resumen RRHH
 
-    Al pie se muestra el **total de costos** y el **total de venta** del evento.
+    **Templates**: Guardar y cargar plantillas de costos para reutilizar entre eventos.
   </Accordion>
 
   <Accordion title="3. Proveedores">
@@ -108,18 +109,21 @@ La pagina de detalle muestra el nombre del evento, su estado (badge), el cliente
   </Accordion>
 
   <Accordion title="4. Rentabilidad">
-    Panel de analisis financiero del evento:
+    Panel de analisis financiero separando presupuesto de costos reales:
 
-    - **Precio del cliente**: Lo que cobra la agencia
-    - **Costo total**: Suma de todos los costos
-    - **Venta total**: Suma de costos con markup
-    - **Margen bruto**: Diferencia entre venta y costo
-    - **Margen %**: Porcentaje de rentabilidad
-    - **Grafico**: Visualizacion de la distribucion de costos por categoria
+    - **Precio al cliente**: Lo que cobra la agencia (manual o desde presupuesto)
+    - **Costo presupuestado**: Suma de items del presupuesto
+    - **Gastos reales**: Costos reales + RRHH del personal asignado
+    - **Costo total**: Presupuesto + gastos reales + RRHH
+    - **Margen**: Precio cliente - costo total (monto y %)
+    - **Desglose Presupuesto**: Tabla con items del presupuesto, venta, markup
+    - **Desglose Gastos reales**: Tabla con gastos + Personal (RRHH)
   </Accordion>
 
   <Accordion title="5. Pagos">
-    Lista de pagos vinculados al evento con tabla detallada:
+    **Pagos pendientes** (arriba): Items de costos y personal marcados como no pagados, con boton "Pagar" para marcar como pagado inline.
+
+    **Pagos del evento** (abajo): Lista de pagos formales vinculados al evento:
 
     | Columna | Descripcion |
     |---------|-------------|
@@ -147,7 +151,29 @@ La pagina de detalle muestra el nombre del evento, su estado (badge), el cliente
     Ver [Tareas](/guia-usuario/tareas) para mas detalles sobre checklists, comentarios, adjuntos y links.
   </Accordion>
 
-  <Accordion title="7. Asistentes">
+  <Accordion title="7. Personal">
+    Asignar personal (freelancers) al evento:
+
+    - **Seleccionar persona** del dropdown (muestra nombre, categoria y tarifa)
+    - **Tarifa auto-cargada** segun categoria, ajustable por evento
+    - **Toggle pagado/no pagado**: icono de check verde
+    - **Impacto**: aparece en costos reales, rentabilidad y pagos pendientes
+
+    Ver [Personal](/guia-usuario/personal) para mas detalles.
+  </Accordion>
+
+  <Accordion title="8. Dinamicas">
+    Registro de actividades realizadas en el evento:
+
+    - **3 categorias**: Rompehielos, Team Building, Actividad Principal
+    - **Area/Departamento** para diferenciar dentro del mismo cliente
+    - **Autocomplete** de nombres de dinamicas usadas previamente
+    - **Notas post-evento** para registrar como salio
+
+    Ver [Dinamicas](/guia-usuario/dinamicas) para mas detalles.
+  </Accordion>
+
+  <Accordion title="9. Asistentes">
     Gestion completa de la lista de asistentes al evento:
 
     - **Tabla de asistentes** con nombre, email, telefono, estado y fecha de check-in
@@ -167,7 +193,7 @@ La pagina de detalle muestra el nombre del evento, su estado (badge), el cliente
     - Fecha y metodo de check-in
   </Accordion>
 
-  <Accordion title="8. Entradas (Tickets)">
+  <Accordion title="10. Entradas (Tickets)">
     Configuracion de tipos de entrada para venta publica:
 
     Cada tipo de entrada tiene:
@@ -190,7 +216,7 @@ La pagina de detalle muestra el nombre del evento, su estado (badge), el cliente
     - Toggle activo/inactivo
   </Accordion>
 
-  <Accordion title="9. Ordenes">
+  <Accordion title="11. Ordenes">
     Lista de ordenes de compra de entradas:
 
     | Columna | Descripcion |
@@ -207,7 +233,7 @@ La pagina de detalle muestra el nombre del evento, su estado (badge), el cliente
     Cada orden contiene items con la entrada comprada, cantidad y subtotal.
   </Accordion>
 
-  <Accordion title="10. Encuestas">
+  <Accordion title="12. Encuestas">
     Creacion y gestion de encuestas post-evento:
 
     - **Crear encuesta**: Nombre, mensaje de bienvenida, mensaje de agradecimiento
@@ -219,7 +245,7 @@ La pagina de detalle muestra el nombre del evento, su estado (badge), el cliente
     Las encuestas generan links unicos por asistente que se comparten via la pagina publica `/survey/{token}`.
   </Accordion>
 
-  <Accordion title="11. Check-in">
+  <Accordion title="13. Check-in">
     Dashboard de check-in en tiempo real:
 
     - **Estadisticas**: Total de asistentes, checked-in, porcentaje
@@ -232,7 +258,7 @@ La pagina de detalle muestra el nombre del evento, su estado (badge), el cliente
     - **Escaner QR**: Integrado en la pagina publica `/e/{slug}/scan`
   </Accordion>
 
-  <Accordion title="12. Invitaciones">
+  <Accordion title="14. Invitaciones">
     Sistema de envio masivo de invitaciones:
 
     - **Guest List Manager**: Gestion de la lista de invitados
@@ -242,7 +268,7 @@ La pagina de detalle muestra el nombre del evento, su estado (badge), el cliente
     - **Tracking**: Fecha de envio, apertura y confirmacion por invitado
   </Accordion>
 
-  <Accordion title="13. Plantillas">
+  <Accordion title="15. Plantillas">
     Plantillas de email especificas del evento:
 
     - Vinculadas al sistema global de plantillas de email
@@ -251,7 +277,7 @@ La pagina de detalle muestra el nombre del evento, su estado (badge), el cliente
     - Ver [Plantillas de Email](/guia-usuario/plantillas-email) para mas detalles
   </Accordion>
 
-  <Accordion title="14. Actividad">
+  <Accordion title="16. Actividad">
     Feed de actividad cronologico del evento:
 
     - Registro automatico de todas las acciones realizadas en el evento
@@ -261,7 +287,7 @@ La pagina de detalle muestra el nombre del evento, su estado (badge), el cliente
     - Detalles del cambio realizado
   </Accordion>
 
-  <Accordion title="15. Configuracion">
+  <Accordion title="17. Configuracion">
     Panel de configuracion especifica del evento:
 
     - **Modo del evento**: Solo invitados / Entradas publicas / Hibrido
